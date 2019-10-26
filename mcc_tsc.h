@@ -2,6 +2,7 @@
 #define INC_MCC_TSC_H
 #include "mcc_err.h"
 #include "mcc_bitsof.h"
+#include <time.h>
 
 #if defined(__ARM__)
 #define MCC_CPU_ARM

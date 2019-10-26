@@ -229,4 +229,36 @@ int mcc_ich8cmp( mcc_ch8_t const *a, mcc_ch8_t const *b, long cap );
 int mcc_gets_validate( MCC_GETS *src );
 int mcc_gets( MCC_GETS *src );
 
+typedef struct mcc_num {
+	char pfx[4]; /* For if statements */
+	size_t base;
+	char sfx[4];
+	ullong num;
+	ullong dec; /* After dot */
+	ullong exp; /* After E/P */
+	union {
+		ullong btw;
+		long double fpn;
+	}
+} MCC_NUM;
+
+/** @brief reads a series of characters as a number
+ * @param base Less than 2 causes mcc_getnum() to read the text as a
+ * number literal (e.g. 0xFFF or 0.1e+10), anything else and it will
+ * read it as JUST a number, no +/- or .
+ * @param lowislow Only paid attention to when base is greater than 36,
+ * tells mcc_getnum() to read A-Z as 36+ and a-z as 10 to 35, otherwise
+ * the reverse is done if false, A-Z will read as 10-35 like normal and
+ * a-z will read as 36+
+ * @param min_dig Chucks an error if read characters is lower than this
+ * @param max_dig Stops reading when read characters reaches this hieght
+**/
+int mcc_getnum(
+	MCC_GETS *src, MCC_NUM *num, size_t base,
+	bool lowislow, long min_dig, long max_dig
+);
+
+// https://www.geeksforgeeks.org/generating-random-number-range-c/
+#define mcc_rand( min, max ) ((rand() % ((max) - (min) + 1)) + (min))
+
 #endif /* INC_NEXT_H */
