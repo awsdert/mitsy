@@ -450,7 +450,7 @@ int mcc_getall( MCC_POS *src, MCC_CH8 *dst,
 		}
 		tok.dst = mcc_iconv_tok_mem( tok.dst, dstm->addr, dstm->size );
 		(void)memcpy( tok.dst.addr, srcm->addr, tok.src.size );
-		tok.dst.done = tok.src.size;
+		dstv->use += srcv->use;
 		goto mcc_getall_done;
 	}
 	tok.dst = mcc_iconv_tok_mem( tok.dst, dstm->addr, dstm->size );
@@ -459,17 +459,9 @@ int mcc_getall( MCC_POS *src, MCC_CH8 *dst,
 		if ( ret != EXIT_SUCCESS ) break;
 		tok.dst = mcc_iconv_tok_mem( tok.dst, dstm->addr, dstm->size );
 	}
-	mcc_getall_done:
-#if 0
-	/* Least ideal, assumes total success */
-	dstv->use += srcv->use;
-#elif 0
-	/* Slow so not ideal, highest accuracy though */
-	dstv->use = mcc_ch8len((mcc_ch8_t*)(dstm->addr));
-#else
-	/* Should work yet somehow does not stop at '\0' like should */
 	dstv->use += (tok.dst.done / sizeof(mcc_ch8_t));
-#endif
+	mcc_getall_done:
+	/* Should work yet somehow does not stop at '\0' like should */
 	((mcc_ch8_t*)(dstm->addr))[dstv->use * sizeof(mcc_ch8_t)] = 0;
 	return ret;
 }
