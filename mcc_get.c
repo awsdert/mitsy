@@ -399,8 +399,8 @@ int mcc_iconv( MCC_ICONV_TOK *tok ) {
 	if ( !tok->src.addr || !tok->src.left ) {
 		(void)memset( tok->dst.addr, 0, tok->dst.left );
 		tok->dst.left = 0;
-		tok->dst.done = tok->dst.size - tok->dst.left;
-		return EXIT_SUCCESS;
+		tok->dst.done = tok->dst.size;
+		return ret;
 	}
 	while ( iconv( tok->cd,
 		&(tok->src.addr), &(tok->src.left),
@@ -449,7 +449,8 @@ int mcc_getall( MCC_POS *src, MCC_CH8 *dst,
 			if ( ret != EXIT_SUCCESS ) return ret;
 		}
 		tok.dst = mcc_iconv_tok_mem( tok.dst, dstm->addr, dstm->size );
-		(void)memcpy( tok.dst.addr, srcm->addr, tok.src.left );
+		(void)memcpy( tok.dst.addr, srcm->addr, tok.src.size );
+		tok.dst.done = tok.src.size;
 		goto mcc_getall_done;
 	}
 	tok.dst = mcc_iconv_tok_mem( tok.dst, dstm->addr, dstm->size );
