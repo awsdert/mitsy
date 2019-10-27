@@ -968,3 +968,93 @@ int mcc_getc( MCC_GETS *src, mcc_utf_t dst, long *len ) {
 		return ret;
 	return mcc_ch8getchar( &(src->text), dst, len );
 }
+int mcc_getnum(
+	MCC_GETS *src, MCC_NUM *dst,
+	mcc_utf_t C, size_t base,
+	bool lowislow, long min_dig, long max_dig ) {
+	int ret = EXIT_SUCCESS, l = 10, h = 10, type, c;
+	long len = 0;
+	if ( !dst ) return EDESTADDRREQ;
+	(void)memset( dst, 0, sizeof(MCC_NUM) );
+	if ( !src || !src->text.use ) return ENODATA;
+	if ( !base ) {
+		if ( mcc_ch8ctype( C[0] ) == MCC_CHAR_TYPE_SPACE ) {
+			mcc_getnum_sign:
+			while ( (ret = mcc_getc(src, C, &len )) == EXIT_SUCCESS ) {
+				if ( len != 1 ) break;
+				if ( mcc_ch8ctype( C[0] ) != MCC_CHAR_TYPE_SPACE ) break;
+			}
+		}
+		if ( len == 1 ) {
+			if ( C[0]  == U'+' )
+				dst->pfx[0] = (dst->pfx[0] == U'-') ? U'-' : U'+';
+			else if ( C[0] == U'-' )
+				dst->pfx[0] = (dst->pfx[0] == U'-') ? U'+' : U'-';
+			else if ( C[0] == U'0' ) {
+				if ( (ret = mcc_getc( src, C, &len )) != EXIT_SUCCESS )
+					return ret;
+				if ( C[0] == U'~' ) {
+					dst->pfx[2] = U'~';
+					while ( (ret = mcc_getc( src, C, &len )) == EXIT_SUCCESS ) {
+						if ( C[0] < U'0' || C[0] > U'9' )
+							break;
+						base *= 10;
+						base += C[0] - U'0';
+					}
+					if ( C[0] == U'l' || C[0] == U'L' ) {
+						lowislow = true;
+						if ( (ret = mcc_getc( src, C, &len )) != EXIT_SUCCESS )
+							return ret;
+					}
+					if ( C[0] != U'~' )
+						return EILSEQ;
+				}
+				else if ( C[0] >= U'0' && C[0] <= U'9' )
+					dts->base = 8;
+				else if ( C[0] == U'X' || C[0] == U'x' ) {
+					dst->base = 16;
+					dst->pfx[2] = U'x';
+					if ( (ret = mcc_getc( src, C, &len )) != EXIT_SUCCESS )
+						return ret;
+				}
+				else if ( C[0] == U'B' || C[0] == U'b' ) {
+					dst->base = 2;
+					dst->pfx[2] = U'b';
+					if ( (ret = mcc_getc( src, C, &len )) != EXIT_SUCCESS )
+						return ret;
+				}
+				else {
+					dst->base = 10;
+					return ret;
+				}
+				dst->pfx[1] = U'0';
+			}
+			else if ( mcc_ch8ctype( C[0] ) == MCC_CHAR_TYPE_SPACE )
+				goto mcc_getnum_sign;
+		}
+	}
+	else dst->base = base;
+	if ( dst->base > 62 ) return ERANGE;
+	if ( dst->base > 36 ) {
+		if ( lowislow ) h = 36;
+		else l = 36;
+	}
+	do {
+		if ( C[0] >= U'0' && C[0] <= U'9' )
+			c = C[0] - U'0';
+		else if ( C[0] >= U'A' && C[0] <= U'Z' )
+			c = (C[0] - U'A') + h;
+		else if ( C[0] >= U'a' && C[0] <= U'z' )
+			c = (C[0] - U'z') + l;
+		else break;
+		if ( c >= base ) break;
+		dst->num *= base;
+		dst->num += c;
+	} while ( mcc_getc( src, C, &len ) == EXIT_SUCCESS );
+	if ( C[0] == U'.' ) {
+		return ENOSYS;
+	}
+	mcc_getnum_done:
+	*dst = num;
+	return ret;
+}

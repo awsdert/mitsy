@@ -254,7 +254,8 @@ typedef struct mcc_num {
  * @param max_dig Stops reading when read characters reaches this hieght
 **/
 int mcc_getnum(
-	MCC_GETS *src, MCC_NUM *num, size_t base,
+	MCC_GETS *src, MCC_NUM *dst,
+	mcc_utf_t C, size_t base,
 	bool lowislow, long min_dig, long max_dig
 );
 
