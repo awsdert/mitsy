@@ -6,7 +6,7 @@ The name mitsy is derived from combining "MIT" from "MIT License" and "C" from "
 Currently this is just a recently started hobby project so don't expect much any time soon, anyways my eventual goals for this project are below.
 
 # Current Targets
-1. Convert local text encoding to UTF-8 for all internal functions to use
+1. Convert local text encoding to UTF-8 for all internal functions to use ~ Done
 2. Read various literals correctly
 3. Precompile a file
 4. Produce a working elf that just returns 0
