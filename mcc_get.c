@@ -322,7 +322,7 @@ long mcc_ch8cleng( mcc_ch8_t const *c ) {
 }
 long mcc_c16cleng( mcc_c16_t const *c ) {
 	if ( !c || !(*c) ) return 0;
-	if ( *c >= 0xD000 || *c <= 0xDFFF ) return 2;
+	if ( *c >= 0xD000 && *c <= 0xDFFF ) return 2;
 	return 1;
 }
 long mcc_c32cleng( mcc_c32_t const * c ) {
@@ -974,6 +974,9 @@ int mcc_getnum(
 	bool lowislow, long min_dig, long max_dig ) {
 	int ret = EXIT_SUCCESS, l = 10, h = 10, type, c;
 	long len = 0;
+	bool isFPN = false;
+	ullong rev = 0, num;
+	sllong exp;
 	if ( !dst ) return EDESTADDRREQ;
 	(void)memset( dst, 0, sizeof(MCC_NUM) );
 	if ( !src || !src->text.use ) return ENODATA;
@@ -1010,7 +1013,7 @@ int mcc_getnum(
 						return EILSEQ;
 				}
 				else if ( C[0] >= U'0' && C[0] <= U'9' )
-					dts->base = 8;
+					dst->base = 8;
 				else if ( C[0] == U'X' || C[0] == U'x' ) {
 					dst->base = 16;
 					dst->pfx[2] = U'x';
@@ -1046,15 +1049,20 @@ int mcc_getnum(
 			c = (C[0] - U'A') + h;
 		else if ( C[0] >= U'a' && C[0] <= U'z' )
 			c = (C[0] - U'z') + l;
+		else if ( !isFPN && C[0] == '.' ) {
+			isFPN = true;
+			continue;
+		}
 		else break;
 		if ( c >= base ) break;
-		dst->num *= base;
+		dst->num *= dst->base;
 		dst->num += c;
 	} while ( mcc_getc( src, C, &len ) == EXIT_SUCCESS );
-	if ( C[0] == U'.' ) {
-		return ENOSYS;
+	if ( isFPN ) {
+		for ( num = dst->num; num;
+			rev *= base, rev += (num % base), num /= base );
+
 	}
 	mcc_getnum_done:
-	*dst = num;
 	return ret;
 }

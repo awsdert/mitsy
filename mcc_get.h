@@ -230,16 +230,17 @@ int mcc_gets_validate( MCC_GETS *src );
 int mcc_gets( MCC_GETS *src );
 
 typedef struct mcc_num {
-	char pfx[4]; /* For if statements */
+	bool lowislow;
 	size_t base;
+	char pfx[4]; /* For if statements */
 	char sfx[4];
-	ullong num;
-	ullong dec; /* After dot */
-	ullong exp; /* After E/P */
 	union {
-		ullong btw;
-		long double fpn;
-	}
+		sllong sig;
+		ullong num;
+	};
+	ullong dec; /* After dot */
+	sllong exp; /* Exponent */
+	ullong man; /* Mantissa */
 } MCC_NUM;
 
 /** @brief reads a series of characters as a number
