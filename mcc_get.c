@@ -974,8 +974,7 @@ int mcc_getnum(
 	bool lowislow, long min_dig, long max_dig ) {
 	int ret = EXIT_SUCCESS, l = 10, h = 10, type, c;
 	long len = 0;
-	bool isFPN = false;
-	ullong rev = 0, num;
+	ullong rev = 0, num = 0, dec, pos, bit, no_mul = 0;
 	sllong exp;
 	if ( !dst ) return EDESTADDRREQ;
 	(void)memset( dst, 0, sizeof(MCC_NUM) );
@@ -1049,19 +1048,35 @@ int mcc_getnum(
 			c = (C[0] - U'A') + h;
 		else if ( C[0] >= U'a' && C[0] <= U'z' )
 			c = (C[0] - U'z') + l;
-		else if ( !isFPN && C[0] == '.' ) {
-			isFPN = true;
+		else if ( !num && C[0] == '.' ) {
+			no_mul = num = dst->num;
 			continue;
 		}
 		else break;
 		if ( c >= base ) break;
 		dst->num *= dst->base;
 		dst->num += c;
+		num *= base;
 	} while ( mcc_getc( src, C, &len ) == EXIT_SUCCESS );
-	if ( isFPN ) {
-		for ( num = dst->num; num;
-			rev *= base, rev += (num % base), num /= base );
-
+	if ( num ) {
+		exp = 0;
+		pos = 0;
+		bit = 1;
+		while ( bit ) {
+			if ( num & bit ) exp = pos;
+			++pos;
+		}
+		bit = 1 << exp;
+		exp = 0;
+		dec = dst->dec = dst->num;
+		dst->num = no_mul;
+		while ( dec < num ) {
+			dec <<= 1;
+			dst->man <<= 1;
+			dst->man |= (dec & bit);
+			exp++;
+			if ( exp == LDBL_MAX_EXP ) break;
+		}
 	}
 	mcc_getnum_done:
 	return ret;
