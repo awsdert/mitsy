@@ -15,6 +15,7 @@
 #endif
 #include <iconv.h>
 #include <stdlib.h>
+#include <float.h>
 
 #define _2STR( DATA ) #DATA
 #define TOSTR( DATA ) _2STR( DATA )

@@ -269,7 +269,7 @@ int mcc_c16ctype( mcc_c16_t c ) {
 	}
 	if ( c < 0x80 ) return MCC_CHAR_TYPE_ASCII;
 	if ( c > 0xFFFF ) return MCC_CHAR_TYPE_OTHER;
-	if ( c >= 0xD000 || c <= 0xDFFF )
+	if ( c >= 0xD000 && c <= 0xDFFF )
 		return MCC_CHAR_TYPE_24BIT;
 	return MCC_CHAR_TYPE_15BIT;
 }
@@ -423,7 +423,7 @@ int mcc_iconv( MCC_ICONV_TOK *tok ) {
 }
 int mcc_getall( MCC_POS *src, MCC_CH8 *dst,
 	mcc_char_info_t mcc_char_info ) {
-	int ret;
+	int ret = mcc_char_info_test(mcc_char_info);
 	MCC_ICONV_TOK tok;
 	MCC_VEC *srcv, *dstv;
 	MCC_MEM *srcm, *dstm;
@@ -437,14 +437,15 @@ int mcc_getall( MCC_POS *src, MCC_CH8 *dst,
 			return (mcc_char_info.enc == mcc_encoding_ch8)
 			? EXIT_SUCCESS : EXIT_FAILURE;
 	}
+	if ( ret != EXIT_SUCCESS ) return ret;
 	tok = mcc_iconv_new_tok( mcc_char_info.ch8dst );
 	tok.dst.done = dstv->use * sizeof(mcc_ch8_t);
 	tok.src = mcc_iconv_tok_mem( tok.src, srcm->addr,
 		srcv->use * mcc_char_info.size );
 	if ( mcc_char_info.enc == mcc_encoding_ch8 ) {
-		if ( srcv->use > (dstv->cap - dstv->use) ) {
+		if ( srcv->use >= (dstv->cap - dstv->use) ) {
 			ret = mcc_vecsize( dstv,
-				(dstv->use + srcv->use) * sizeof(mcc_ch8_t),
+				(dstv->use + srcv->use + 1) * sizeof(mcc_ch8_t),
 				sizeof(mcc_ch8_t) );
 			if ( ret != EXIT_SUCCESS ) return ret;
 		}
@@ -978,7 +979,7 @@ int mcc_getnum(
 	sllong exp;
 	if ( !dst ) return EDESTADDRREQ;
 	(void)memset( dst, 0, sizeof(MCC_NUM) );
-	if ( !src || !src->text.use ) return ENODATA;
+	if ( !src || !src->text.vec.use ) return ENODATA;
 	if ( !base ) {
 		if ( mcc_ch8ctype( C[0] ) == MCC_CHAR_TYPE_SPACE ) {
 			mcc_getnum_sign:
@@ -1067,16 +1068,19 @@ int mcc_getnum(
 			++pos;
 		}
 		bit = 1 << exp;
-		exp = 0;
 		dec = dst->dec = dst->num;
 		dst->num = no_mul;
-		while ( dec < num ) {
+		pos = 0;
+		dst->man = num;
+		while ( pos < LDBL_MANT_DIG ) {
+			++pos;
 			dec <<= 1;
 			dst->man <<= 1;
 			dst->man |= (dec & bit);
-			exp++;
-			if ( exp == LDBL_MAX_EXP ) break;
 		}
+		dst->man >>= --exp;
+		/* Not sure if this is right */
+		dst->exp = exp + LDBL_MAX_EXP;
 	}
 	mcc_getnum_done:
 	return ret;
