@@ -1,0 +1,17 @@
+Found this project had been starred by someone
+so as a means of giving updates on what I'm (and
+later other devlopers) doing at least I created
+this file.
+
+*awsdert
+========
+Now: Currently working out how to process the exponent
+in a float
+**Task list after the above is done (within current goal)
+1. Check same logic works for double and long double
+2. Introduce logic for alternative bases between 2
+and 62
+3. Transfer logic into a function for mitsy, the function
+will handle converting numbers of any base for both
+numeric literals and after the base is already decided
+e.g both 0x30 and \x30 should result in UTF-8 '0'.
