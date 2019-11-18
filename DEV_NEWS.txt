@@ -5,8 +5,8 @@ this file.
 
 *awsdert
 ========
-Now: Currently working out how to process the exponent
-in a float
+Now: Worked out how to process the exponent
+in a float, now looking for corner cases
 **Task list after the above is done (within current goal)
 1. Check same logic works for double and long double
 2. Introduce logic for alternative bases between 2
