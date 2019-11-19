@@ -45,12 +45,12 @@ int _testc(
 	void *text, size_t size, size_t csize,
 	func_mcc_gets _gets ) {
 	int ret;
-	long len = 0;
-	mcc_utf_t utf = {0};
 	MCC_POS tmp = {0};
 	MCC_GETS src = setup_test( &tmp, text, size, csize, "Char/s", _gets );
-	while ( (ret = mcc_getc( &src, utf, &len )) == EXIT_SUCCESS )
-		printf( " '%c'", utf[0] );
+	MCC_GETC chr = {0};
+	chr.src = &src;
+	while ( (ret = mcc_getc( &chr )) == EXIT_SUCCESS )
+		printf( " '%c'", chr.c[0] );
 	return clean_test( ret, csize, &tmp, &src );
 }
 int _test(

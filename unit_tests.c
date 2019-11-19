@@ -81,8 +81,8 @@ mcc_ch8_t *type_names[TYPES_UPTO] = { u8"?", u8"*",
 	u8"char", u8"mcc_ch8_t", u8"char16_t", u8"char32_t", u8"wchar_t",
 NULL };
 
-int literal( MCC_GETS *_mcc_gets, DATA *dst, mcc_utf_t utf, long *len ) {
-	int ret = mcc_gets_validate(_mcc_gets);
+int literal( MCC_GETC *src, DATA *dst ) {
+	int ret = mcc_getc_validate(src);
 	DATA _data = {0};
 	size_t invalid, type;
 	_Bool readmore = 1;
@@ -90,18 +90,18 @@ int literal( MCC_GETS *_mcc_gets, DATA *dst, mcc_utf_t utf, long *len ) {
 	ret = match2_data( u8"?", sizeof(u8"?"), &invalid );
 	if ( ret ) goto literal_done;
 	type = invalid;
-	switch ( utf[0] ) {
+	switch ( src->c[0] ) {
 	case 'U':
 		ret = match2_data( u8"char32_t", sizeof(u8"char32_t"), &type );
 		if ( ret ) goto literal_done;
 		break;
 	case 'u':
 		readmore = 0;
-		if ( mcc_getc(_mcc_gets, utf, len) )
+		if ( mcc_getc( src ) )
 			ret = ENODATA;
 	}
 	literal_done:
-	if ( readmore ) mcc_getc(_mcc_gets, utf, len );
+	if ( readmore ) mcc_getc( src );
 	if ( dst ) *dst = _data;
 	return ret;
 }

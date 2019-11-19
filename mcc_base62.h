@@ -19,7 +19,7 @@ typedef ulong ubase62_t;
 #endif
 
 int ubase62(
-	MCC_GETS *src, mcc_utf_t utf,
-	ubase62_t *dst, int base, bool lowislow, long min_len, long max_len );
+	MCC_GETC *src, ubase62_t *dst, int base,
+	bool lowislow, long min_len, long max_len );
 
 #endif

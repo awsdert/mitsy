@@ -1,11 +1,12 @@
 #include "mcc_base62.h"
 
 int ubase62(
-	MCC_GETS *src, mcc_utf_t utf,
-	ubase62_t *dst, int base, bool lowislow, long min_len, long max_len )
+	MCC_GETC *src, ubase62_t *dst, int base,
+	bool lowislow, long min_len, long max_len
+)
 {
-	int ret = mcc_gets_validate(src), c;
-	long i = 0, l, h, len = 0, dec = -1;
+	int ret = mcc_getc_validate(src), c;
+	long i = 0, l, h, dec = -1;
 	ubase62_t num = 0;
 	if ( ret != EXIT_SUCCESS )
 		goto ubase62_done;
@@ -25,7 +26,7 @@ int ubase62(
 	else if ( lowislow ) { l = 10; h = 36; }
 	else { l = 36; h = 10; }
 	do {
-		c = utf[0];
+		c = src->c[0];
 		if ( c >= U'0' && c <= U'9' )
 			c -= U'0';
 		else if ( c >= U'A' && c <= U'Z' )
@@ -37,11 +38,11 @@ int ubase62(
 		num *= base;
 		num += c;
 		++i;
-	} while ( (ret = mcc_getc(src,utf,&len)) == EXIT_SUCCESS );
+	} while ( (ret = mcc_getc(src)) == EXIT_SUCCESS );
 	if ( c == U'.' ) {
 		dec = 0;
 		do {
-			c = utf[0];
+			c = src->c[0];
 			if ( c >= U'0' && c <= U'9' )
 				c -= U'0';
 			else if ( c >= U'A' && c <= U'Z' )
@@ -53,7 +54,7 @@ int ubase62(
 			num *= base;
 			num += c;
 			++i; ++dec;
-		} while ( (ret = mcc_getc(src,utf,&len)) == EXIT_SUCCESS );
+		} while ( (ret = mcc_getc(src)) == EXIT_SUCCESS );
 	}
 	switch ( ret ) {
 	case EXIT_SUCCESS: case ENODATA: break;
@@ -65,7 +66,7 @@ int ubase62(
 		FAIL( stderr, ret, "Not enough digits" );
 		fprintf( stderr,
 			"c = '%s', i = %ld, min_len = %ld, max_len = %ld\n",
-			utf, i, min_len, max_len );
+			src->c, i, min_len, max_len );
 	}
 	ubase62_done:
 	if ( dst ) *dst = num;
