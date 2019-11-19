@@ -6,12 +6,14 @@ this file.
 *awsdert
 ========
 Now: Worked out how to process the exponent
-in a float, now looking for corner cases
+in a float, corner cases in double & probably long double
 **Task list after the above is done (within current goal)
-1. Check same logic works for double and long double
+1. Check same logic works for double and
+long double ~ quirks in large exponents
 2. Introduce logic for alternative bases between 2
-and 62
+and 62 ~ tested on both decimal and hexadecimal
 3. Transfer logic into a function for mitsy, the function
 will handle converting numbers of any base for both
 numeric literals and after the base is already decided
-e.g both 0x30 and \x30 should result in UTF-8 '0'.
+e.g both 0x30 and \x30 should result in UTF-8 '0'. ~ prepping
+unit_tests.c for this

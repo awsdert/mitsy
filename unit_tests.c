@@ -106,18 +106,102 @@ int literal( MCC_GETC *src, DATA *dst ) {
 	return ret;
 }
 
-int main() {
-	int ret;
-	size_t i;
-	//mcc_utf_t utf = {0};
-	mcc_ch8_t *name;
-	for ( i = 0; i < TYPES_UPTO; ++i ) {
-		if ( !(name = type_names[i]) ||
-		(ret = append_data( &gdata, name,mcc_ch8len(name)+1,&types[i])) )
+typedef struct symbol {
+	long type;
+	long name;
+	long leng;
+	long data;
+	long size;
+} SYMBOL;
+
+MCC_CH8 deftab = {0}, strtab = {0};
+MCC_VEC symtab = {0};
+
+mcc_ch8_t *defines[] = {
+	u8"#define CHAR_BIT 8",
+	u8"#define SHRT_BIT (CHAR_BIT * 8)",
+	NULL
+};
+
+int readname( MCC_GETC *src, MCC_CH8 *dst ) {
+	int ret, type;
+	mcc_ch8_t *text;
+	long i = 0;
+	_Bool stdc_compliance = 0;
+	// We'll use C89 for time being since still learning assembler
+	// long stdc_version = 198900L;
+	if ( !dst ) return EDESTADDRREQ;
+	ret = mcc_getc_validate(src);
+	if ( ret != EXIT_SUCCESS ) return ret;
+	ret = mcc_vecsize( &(dst->vec), MCC_BUFSIZ, sizeof(mcc_ch8_t) );
+	if ( ret != EXIT_SUCCESS ) return ret;
+	text = (mcc_ch8_t*)(dst->vec.mem.addr);
+	(void)memset( text, 0, dst->vec.mem.size );
+	dst->vec.use = 0;
+	do {
+		type = mcc_ch8ctype( src->c[0] );
+		if ( type < MCC_CHAR_TYPE_SCORE ||
+			type > MCC_CHAR_TYPE_OTHER ) break;
+		if ( i == 0 && type == MCC_CHAR_TYPE_DIGIT ) {
+			ret = EILSEQ;
 			break;
+		}
+		if ( stdc_compliance && type > MCC_CHAR_TYPE_DIGIT ) {
+			ret = EILSEQ;
+			break;
+		}
+		if ( i + src->len > dst->vec.cap ) {
+			ret = mcc_vecsize( &(dst->vec),
+				dst->vec.mem.size + MCC_BUFSIZ, sizeof(mcc_ch8_t) );
+			if ( ret != EXIT_SUCCESS ) break;
+			text = (mcc_ch8_t*)dst->vec.mem.addr;
+		}
+		memcpy( &(text[i]), src->c, src->len );
+		i += src->len;
+	} while ( (ret = mcc_getc( src )) == EXIT_SUCCESS );
+	return ret;
+}
+
+int value( MCC_GETC *src, SYMBOL *dst ) {
+	int ret;
+	MCC_CH8 name = {0};
+	//mcc_ch8_t *text, *names = deftab.vec.mem.addr;
+	//long i;
+	if ( !dst ) return EDESTADDRREQ;
+	(void)memset( dst, 0, sizeof(SYMBOL) );
+	ret = mcc_getc_validate(src);
+	if ( ret != EXIT_SUCCESS ) return ret;
+	ret = mcc_vecsize( &(name.vec), MCC_BUFSIZ, sizeof(mcc_ch8_t) );
+	if ( ret != EXIT_SUCCESS ) return ret;
+	ret = readname( src, &name );
+	if ( ret != EXIT_SUCCESS ) return ret;
+	//text = (mcc_ch8_t*)(name.vec.mem.addr);
+	return ret;
+}
+
+int define( MCC_GETC *src ) {
+	int ret = mcc_getc_validate(src);
+	return ret;
+}
+
+int main() {
+	int ret = EXIT_SUCCESS;
+	long i;
+	MCC_GETS _mcc_gets = {0};
+	MCC_GETC _mcc_getc = {0};
+	MCC_CH8 utf;
+	_mcc_getc.src = &_mcc_gets;
+	_mcc_gets.src = &utf;
+	_mcc_gets.tell = (func_mcc_tell)mcc_ch8tell;
+	_mcc_gets.seek = (func_mcc_seek)mcc_ch8seek;
+	_mcc_gets.gets = (func_mcc_gets)mcc_ch8gettext;
+	for ( i = 0; defines[i]; ++i ) {
+		(void)memset(&utf,0,sizeof(MCC_CH8));
+		utf.vec.mem.addr = defines[i];
+		utf.vec.use = mcc_ch8len( defines[i] );
+		utf.vec.mem.size = utf.vec.cap = utf.vec.use + 1;
+		ret = define(&_mcc_getc);
+		if ( ret != EXIT_SUCCESS ) break;
 	}
-	if (ret) FAIL( stderr, ret, "" );
-	if ( gdata.data ) free(gdata.data);
-	if ( gsize.data ) free(gsize.data);
-	return ret ? 1 : 0;
+	return (ret == EXIT_SUCCESS) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
