@@ -9,7 +9,7 @@ SRC=$(wildcard *.c)
 CPP=$(wildcard *.cpp)
 INC=$(wildcard *.h)
 HPP=$(wildcard *.hpp)
-EXE_TARGETS=expr char main word
+EXE_TARGETS=main word unit_tests
 DLL_TARGETS=mcc_mem mcc_get mcc_tsc mcc_base62
 TARGETS=${EXE_TARGETS} ${DLL_TARGETS}
 

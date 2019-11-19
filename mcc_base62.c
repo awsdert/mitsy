@@ -4,7 +4,7 @@ int ubase62(
 	MCC_GETS *src, mcc_utf_t utf,
 	ubase62_t *dst, int base, bool lowislow, long min_len, long max_len )
 {
-	int ret = mcc_gets_test(src), c;
+	int ret = mcc_gets_validate(src), c;
 	long i = 0, l, h, len = 0, dec = -1;
 	ubase62_t num = 0;
 	if ( ret != EXIT_SUCCESS )

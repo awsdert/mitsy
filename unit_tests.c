@@ -1,6 +1,6 @@
-#include "tsc.h"
-#include "next.h"
-#include "base62.h"
+#include "mcc_tsc.h"
+#include "mcc_get.h"
+#include "mcc_base62.h"
 
 typedef struct _tab {
 	size_t have;
@@ -35,19 +35,19 @@ int add2tab( TAB *tab, void const *data, size_t size, size_t *pos ) {
 	return EXIT_SUCCESS;
 }
 
-int append_data( void const *data, size_t size, size_t *pos ) {
+int append_data( TAB *tab, void const *data, size_t size, size_t *pos ) {
 	int ret;
 	char null = 0;
 	size_t zero = 1;
 	if ( !gdata.leng ) {
-		if ( (ret = add2tab( &null, zero, NULL )) != EXIT_SUCCESS )
+		if ( (ret = add2tab( tab, &null, zero, NULL )) != EXIT_SUCCESS )
 			return ret;
-		if ( (ret = add2tab( &zero, sizeof(size_t), NULL )) != EXIT_SUCCESS )
+		if ( (ret = add2tab( tab, &zero, sizeof(size_t), NULL )) != EXIT_SUCCESS )
 			return ret;
 	}
-	if ( (ret = add2tab( data, size, pos )) != EXIT_SUCCESS )
+	if ( (ret = add2tab( tab, data, size, pos )) != EXIT_SUCCESS )
 			return ret;
-	if ( (ret = add2tab( &size, sizeof(size_t), NULL )) != EXIT_SUCCESS )
+	if ( (ret = add2tab( tab, &size, sizeof(size_t), NULL )) != EXIT_SUCCESS )
 		return ret;
 	return EXIT_SUCCESS;
 }
@@ -75,14 +75,14 @@ typedef struct _data {
 
 #define TYPES_UPTO 50
 size_t types[TYPES_UPTO] = {0};
-char8_t *type_names[TYPES_UPTO] = { u8"?", u8"*",
+mcc_ch8_t *type_names[TYPES_UPTO] = { u8"?", u8"*",
 	u8"signed char", u8"signed short", u8"signed int", u8"signed long", u8"signed long long",
 	u8"unsigned char", u8"unsigned short", u8"unsigned int", u8"unsigned long", u8"unsigned long long",
-	u8"char", u8"char8_t", u8"char16_t", u8"char32_t", u8"wchar_t",
+	u8"char", u8"mcc_ch8_t", u8"char16_t", u8"char32_t", u8"wchar_t",
 NULL };
 
-int literal( NEXTC *_nextc, DATA *dst ) {
-	int ret = nextc_validate(_nextc);
+int literal( MCC_GETS *_mcc_gets, DATA *dst, mcc_utf_t utf, long *len ) {
+	int ret = mcc_gets_validate(_mcc_gets);
 	DATA _data = {0};
 	size_t invalid, type;
 	_Bool readmore = 1;
@@ -90,17 +90,18 @@ int literal( NEXTC *_nextc, DATA *dst ) {
 	ret = match2_data( u8"?", sizeof(u8"?"), &invalid );
 	if ( ret ) goto literal_done;
 	type = invalid;
-	switch ( _nextc->c[0] ) {
+	switch ( utf[0] ) {
 	case 'U':
 		ret = match2_data( u8"char32_t", sizeof(u8"char32_t"), &type );
 		if ( ret ) goto literal_done;
 		break;
 	case 'u':
 		readmore = 0;
-		if ( !nextc(_nextc) ) {
-			ret =
+		if ( mcc_getc(_mcc_gets, utf, len) )
+			ret = ENODATA;
 	}
 	literal_done:
+	if ( readmore ) mcc_getc(_mcc_gets, utf, len );
 	if ( dst ) *dst = _data;
 	return ret;
 }
@@ -108,13 +109,15 @@ int literal( NEXTC *_nextc, DATA *dst ) {
 int main() {
 	int ret;
 	size_t i;
-	char8_t *name;
+	//mcc_utf_t utf = {0};
+	mcc_ch8_t *name;
 	for ( i = 0; i < TYPES_UPTO; ++i ) {
 		if ( !(name = type_names[i]) ||
-		(ret = append_data(name,utflen(name)+1,&types[i])) )
+		(ret = append_data( &gdata, name,mcc_ch8len(name)+1,&types[i])) )
 			break;
 	}
 	if (ret) FAIL( stderr, ret, "" );
-	if ( gdata ) free(gdata);
+	if ( gdata.data ) free(gdata.data);
+	if ( gsize.data ) free(gsize.data);
 	return ret ? 1 : 0;
 }

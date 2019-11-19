@@ -946,14 +946,14 @@ int mcc_gets_init( MCC_GETS *_mcc_gets ) {
 	_mcc_gets->seek = (func_mcc_seek)fseek;
 	return EXIT_SUCCESS;
 }
-int mcc_gets_test( MCC_GETS *src ) {
+int mcc_gets_validate( MCC_GETS *src ) {
 	if ( !src ) return EDESTADDRREQ;
 	if ( !src->gets || !src->tell || !src->seek )
 		return ENOSYS;
 	return EXIT_SUCCESS;
 }
 int mcc_gets( MCC_GETS *src ) {
-	int ret = mcc_gets_test( src );
+	int ret = mcc_gets_validate( src );
 	if ( ret != EXIT_SUCCESS ) return ret;
 	src->text.pos = src->text.vec.use = 0;
 	if ( src->text.vec.mem.addr )
@@ -961,7 +961,7 @@ int mcc_gets( MCC_GETS *src ) {
 	return src->gets( src->src, &(src->text) );
 }
 int mcc_getc( MCC_GETS *src, mcc_utf_t dst, long *len ) {
-	int ret = mcc_gets_test( src );
+	int ret = mcc_gets_validate( src );
 	if ( ret != EXIT_SUCCESS ) return ret;
 	if ( !dst || !len ) return EDESTADDRREQ;
 	if ( mcc_poslast( &(src->text) ) &&
@@ -973,9 +973,9 @@ int mcc_getnum(
 	MCC_GETS *src, MCC_NUM *dst,
 	mcc_utf_t C, size_t base,
 	bool lowislow, long min_dig, long max_dig ) {
-	int ret = EXIT_SUCCESS, l = 10, h = 10, type, c;
+	int ret = EXIT_SUCCESS, l = 10, h = 10, c;
 	long len = 0;
-	ullong rev = 0, num = 0, dec, pos, bit, no_mul = 0;
+	ullong num = 0, dec, pos, bit, no_mul = 0;
 	sllong exp;
 	if ( !dst ) return EDESTADDRREQ;
 	(void)memset( dst, 0, sizeof(MCC_NUM) );
@@ -1082,6 +1082,5 @@ int mcc_getnum(
 		/* Not sure if this is right */
 		dst->exp = exp + LDBL_MAX_EXP;
 	}
-	mcc_getnum_done:
 	return ret;
 }
