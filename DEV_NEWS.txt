@@ -5,7 +5,10 @@ this file.
 
 *awsdert
 ========
-Now: Thought I had worked out how to use the exponent, mostly have but anything greater than max exponent digits currently needs final position manipulation, refer to https://onlinegdb.com/SkN7Cwt3S for to see what I mean
+Now: Thought I had worked out how to use the exponent, mostly
+have but anything greater than max exponent digits currently
+needs final position manipulation, refer to
+https://onlinegdb.com/SkN7Cwt3S for to see what I mean
 **Task list after the above is done (within current goal)
 1. Check same logic works for double and
 long double ~ quirks in large exponents
