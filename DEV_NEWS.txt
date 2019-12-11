@@ -5,8 +5,8 @@ this file.
 
 *awsdert
 ========
-Now: Worked out how to process the exponent
-in a float, corner cases in double & probably long double
+Now: Seemed to have correctly handled exponent and rounding,
+currently trying to find where an infinite loop is occuring
 **Task list after the above is done (within current goal)
 1. Check same logic works for double and
 long double ~ quirks in large exponents
