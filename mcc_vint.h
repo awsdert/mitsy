@@ -1,6 +1,8 @@
 #ifndef INC_MCC_VINT_H
 #define INC_MCC_VINT_H
 
+#include "mcc.get.h"
+
 #include <limits.h>
 #include <inttypes.h>
 #include <stdbool.h>
