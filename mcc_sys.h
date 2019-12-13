@@ -849,6 +849,62 @@
 #define MCC_CPU_INT_WIDTH 32
 #endif
 
+#ifdef __STDC__
+#ifdef __STDC_VERSION__
+#define MCC_STDC_VER __STDC_VERSION__
+#else
+#define MCC_STDC_VER 198900L
+#endif
+#endif
+
+#ifdef __mitsy__
+#define MCC__HAVE_LLONG
+#elif defined( __LLONG_MIN__ ) && __LLONG_MIN__ < 0
+#define MCC__HAVE_LLONG
+#elif defined( __LONG_LONG_MIN__ ) && __LONG_LONG_MIN__ < 0
+#define MCC__HAVE_LLONG
+#elif defined( __GNUC__ ) && __GNUC__ >= 3L
+#define MCC__HAVE_LLONG
+#elif defined( MCC_STDC_VER ) && MCC_STDC_VER >= 199900l
+#define MCC__HAVE_LLONG
+#endif
+
+#ifdef MCC__HAVE_LLONG
+#if defined( __LLONG_MIN__ ) && __LLONG_MIN__ < 0
+#define MCC__ULLONG_MAX __ULLONG_MAX__
+#define MCC__LLONG_MAX __LLONG_MAX__
+#define MCC__LLONG_MIN __LLONG_MIN__
+#elif defined( __LONG_LONG_MIN__ ) && __LONG_LONG_MIN__ < 0
+#define MCC__ULLONG_MAX __ULONG_LONG_MAX__
+#define MCC__LLONG_MAX __LONG_LONG_MAX__
+#define MCC__LLONG_MIN __LONG_LONG_MIN__
+#else
+#define MCC__ULLONG_MAX (~0ULL)
+#define MCC__LLONG_MAX (0LL | (MCC__ULLONG_MAX >> 1))
+#define MCC__LLONG_MIN ((-MCC__LLONG_MAX)-1)
+#endif
+#endif
+
+#if defined( __LONG_MIN__ ) && __LONG_MIN__ < 0
+#define MCC__ULONG_MAX __ULONG_MAX__
+#define MCC__LONG_MAX __LONG_MAX__
+#define MCC__LONG_MIN __LONG_MIN__
+#else
+#define MCC__ULONG_MAX (~0UL)
+#define MCC__LONG_MAX (0L | (MCC__ULONG_MAX >> 1))
+#define MCC__LONG_MIN ((-MCC__LONG_MAX)-1)
+#endif
+
+#if defined( __INT_MIN__ ) && __INT_MIN__ < 0
+#define MCC__UINT_MAX __UINT_MAX__
+#define MCC__INT_MAX __INT_MAX__
+#define MCC__INT_MIN __INT_MIN__
+#else
+#define MCC__UINT_MAX (~0U)
+#define MCC__INT_MAX (0 | (MCC__UINT_MAX >> 1))
+#define MCC__INT_MIN ((-MCC__INT_MAX)-1)
+#endif
+
 #if defined( MCC__SYS_llp64 ) || defined( MCC__SYS_LLP64 )
 #define MCC_SYS_LLP64
 #elif defined( MCC__SYS_silp64 ) || defined( MCC__SYS_SILP64 )
@@ -875,10 +931,25 @@
 #define MCC_SYS_ILP32
 #elif defined( MCC_SYS_LINUX ) && defined( MCC_CPU_INT_WIDTH )
 #	if MCC_CPU_INT_WIDTH == 64
-/*	TODO: detect ILP64 && LLP64 situations */
-#	define MCC_SYS_LP64
+#		if defined( MCC__HAVE_LLONG ) && MCC__LLONG_MIN < MCC__LONG_MIN
+#		define MCC_SYS_LLP64
+#		elif MCC__INT_MIN == MCC__LONG_MIN
+#		define MCC_SYS_ILP64
+#		else
+#		define MCC_SYS_LP64
+#		endif
 #	elif MCC_CPU_INT_WIDTH == 32
-#	define MCC_SYS_ILP32
+#		if MCC__INT_MIN == MCC__LONG_MIN
+#		define MCC_SYS_ILP32
+#		else
+#		define MCC_SYS_LP32
+#		endif
+#	elif MCC_CPU_INT_WIDTH == 16
+#		define MCC_SYS_ILP16
+#	elif MCC_CPU_INT_WIDTH == 8
+#		define MCC_SYS_ILP8
+#	else
+#		define MCC_SYS_CUSTOM_DATA_MODEL
 #	endif
 #endif
 
