@@ -848,10 +848,15 @@
 
 #if defined( MCC_SYS_AMD ) || defined( MCC_SYS_S390X ) \
 	|| defined( MCC_SYS_POWERPC64 ) || defined( MCC_SYS_IA64 )
-#define MCC_CPU_INT_WIDTH 64
+#define MCC_CPU_WORD_WIDTH 64
+#define MCC_CPU_CHAR_WIDTH 8
 #elif defined( MCC_SYS_S390 ) || defined( MCC_SYS_POWERPC ) \
 	|| defined( MCC_SYS_I386 )
-#define MCC_CPU_INT_WIDTH 32
+#define MCC_CPU_WORD_WIDTH 32
+#define MCC_CPU_CHAR_WIDTH 8
+#else
+#define MCC_CPU_WORD_WIDTH 8
+#define MCC_CPU_CHAR_WIDTH 8
 #endif
 
 #ifdef __STDC__
@@ -886,8 +891,8 @@
 #define MCC_SYS_LP32
 #elif defined( MCC_SYS_WIN32 )
 #define MCC_SYS_ILP32
-#elif defined( MCC_SYS_LINUX ) && defined( MCC_CPU_INT_WIDTH )
-#	if MCC_CPU_INT_WIDTH == 64
+#elif defined( MCC_SYS_LINUX ) && defined( MCC_CPU_WORD_WIDTH )
+#	if MCC_CPU_WORD_WIDTH == 64
 #		if ((~0u) >> 63)
 #		define MCC_SYS_ILP64
 #		elif ((0ul) >> 63)
@@ -895,15 +900,15 @@
 #		else
 #		define MCC_SYS_LLP64
 #		endif
-#	elif MCC_CPU_INT_WIDTH == 32
+#	elif MCC_CPU_WORD_WIDTH == 32
 #		if ((~0u) >> 31)
 #		define MCC_SYS_ILP32
 #		else
 #		define MCC_SYS_LP32
 #		endif
-#	elif MCC_CPU_INT_WIDTH == 16
+#	elif MCC_CPU_WORD_WIDTH == 16
 #		define MCC_SYS_ILP16
-#	elif MCC_CPU_INT_WIDTH == 8
+#	elif MCC_CPU_WORD_WIDTH == 8
 #		define MCC_SYS_ILP8
 #	else
 #		define MCC_SYS_CUSTOM_DATA_MODEL
