@@ -55,6 +55,50 @@ typedef unsigned INTPTR_TYPE uintptr_t;
 #	endif
 #endif
 
+#ifndef UINTPTR_C
+#	ifdef __UINTPTR_C
+#	define UINTPTR_C __UINTPTR_C
+#	elif defined( MCC_SYS_LLP64 )
+#	define UINTPTR_C( VAL ) VAL##ull
+#	else
+#	define UINTPTR_C( VAL ) VAL##ul
+#	endif
+#endif
+
+#ifndef INTPTR_C
+#	ifdef __INTPTR_C
+#	define INTPTR_C __INTPTR_C
+#	elif defined( MCC_SYS_LLP64 )
+#	define INTPTR_C( VAL ) VAL##ll
+#	else
+#	define INTPTR_C( VAL ) VAL##l
+#	endif
+#endif
+
+#ifndef UINTPTR_MAX
+#	ifdef __UINTPTR_MAX__
+#	define UINTPTR_MAX __UINTPTR_MAX__
+#	else
+#	define UINTPTR_MAX (~UINTPTR_C(0))
+#	endif
+#endif
+
+#ifndef INTPTR_MAX
+#	ifdef __INTPTR_MAX__
+#	define INTPTR_MAX __INTPTR_MAX__
+#	else
+#	define INTPTR_MAX (INTPTR_C(0) | (UINTPTR_MAX >> 1))
+#	endif
+#endif
+
+#ifndef INTPTR_MIN
+#	ifdef __INTPTR_MIN__
+#	define INTPTR_MIN __INTPTR_MIN__
+#	else
+#	define INTPTR_MIN (INTPTR_C(-1) ^ INTPTR_MAX)
+#	endif
+#endif
+
 #ifndef PRI_INTPTR
 #	ifdef __PRI_INTPTR__
 #	define PRI_INTPTR __PRI_INTPTR__
@@ -152,6 +196,50 @@ typedef unsigned INTMAX_TYPE uintmax_t;
 #	endif
 #endif
 
+#ifndef UINTMAX_C
+#	ifdef __UINTMAX_C
+#	define UINTMAX_C __UINTMAX_C
+#	elif defined( MCC_HAVE_LLONG ) && LLONG_MAX > LONG_MAX
+#	define UINTMAX_C( VAL ) VAL##ull
+#	else
+#	define UINTMAX_C( VAL ) VAL##ul
+#	endif
+#endif
+
+#ifndef INTMAX_C
+#	ifdef __INTMAX_C
+#	define INTMAX_C __INTMAX_C
+#	elif defined( MCC_HAVE_LLONG ) && LLONG_MAX > LONG_MAX
+#	define INTMAX_C( VAL ) VAL##ll
+#	else
+#	define INTMAX_C( VAL ) VAL##l
+#	endif
+#endif
+
+#ifndef UINTMAX_MAX
+#	ifdef __UINTMAX_MAX__
+#	define UINTMAX_MAX __UINTMAX_MAX__
+#	else
+#	define UINTMAX_MAX (~UINTMAX_C(0))
+#	endif
+#endif
+
+#ifndef INTMAX_MAX
+#	ifdef __INTMAX_MAX__
+#	define INTMAX_MAX __INTMAX_MAX__
+#	else
+#	define INTMAX_MAX (INTMAX_C(0) | (UINTMAX_MAX >> 1))
+#	endif
+#endif
+
+#ifndef INTMAX_MIN
+#	ifdef __INTMAX_MIN__
+#	define INTMAX_MIN __INTMAX_MIN__
+#	else
+#	define INTMAX_MIN (INTMAX_C(-1) ^ INTMAX_MAX)
+#	endif
+#endif
+
 #ifndef PRI_INTMAX
 #	ifdef __PRI_INTMAX__
 #	define PRI_INTMAX __PRI_INTMAX__
@@ -219,7 +307,9 @@ typedef struct imaxdiv {
 
 #ifndef INT_LEAST8_WIDTH
 #ifdef __INT_LEAST8_WIDTH__
-#define INT_LEAST8_WIDTH
+#define INT_LEAST8_WIDTH __INT_LEAST8_WIDTH__
+#else
+#define INT_LEAST8_WIDTH INT_WIDTH
 #endif
 #endif
 
@@ -239,6 +329,46 @@ typedef struct imaxdiv {
 #	define INT_LEAST8_WIDTH INT_WIDTH
 #	define PRI_LEAST8
 #	define SCN_LEAST8
+#	endif
+#endif
+
+#ifndef UINT_LEAST8_C
+#	ifdef __UINT_LEAST8_C
+#	define UINT_LEAST8_C __UINT_LEAST8_C
+#	else
+#	define UINT_LEAST8_C( VAL ) VAL##u
+#	endif
+#endif
+
+#ifndef INT_LEAST8_C
+#	ifdef __INT_LEAST8_C
+#	define INT_LEAST8_C __INT_LEAST8_C
+#	else
+#	define INT_LEAST8_C( VAL ) VAL
+#	endif
+#endif
+
+#ifndef UINT_LEAST8_MAX
+#	ifdef __UINT_LEAST8_MAX__
+#	define UINT_LEAST8_MAX __UINT_LEAST8_MAX__
+#	else
+#	define UINT_LEAST8_MAX (~UINT_LEAST8_C(0))
+#	endif
+#endif
+
+#ifndef INT_LEAST8_MAX
+#	ifdef __INT_LEAST8_MAX__
+#	define INT_LEAST8_MAX __INT_LEAST8_MAX__
+#	else
+#	define INT_LEAST8_MAX (INT_LEAST8_C(0) | (UINT_LEAST8_MAX >> 1))
+#	endif
+#endif
+
+#ifndef INT_LEAST8_MIN
+#	ifdef __INT_LEAST8_MIN__
+#	define INT_LEAST8_MIN __INT_LEAST8_MIN__
+#	else
+#	define INT_LEAST8_MIN (INT_LEAST8_C(-1) ^ INT_LEAST8_MAX)
 #	endif
 #endif
 
@@ -311,7 +441,9 @@ typedef unsigned INT_LEAST8_TYPE uint_least8_t;
 #if MCC_CPU_WORD_WIDTH >= 16
 #ifndef INT_LEAST16_WIDTH
 #ifdef __INT_LEAST16_WIDTH__
-#define INT_LEAST16_WIDTH
+#define INT_LEAST16_WIDTH __INT_LEAST16_WIDTH__
+#else
+#define INT_LEAST16_WIDTH INT_WIDTH
 #endif
 #endif
 
@@ -331,6 +463,46 @@ typedef unsigned INT_LEAST8_TYPE uint_least8_t;
 #	define INT_LEAST16_WIDTH INT_WIDTH
 #	define PRI_LEAST16
 #	define SCN_LEAST16
+#	endif
+#endif
+
+#ifndef UINT_LEAST16_C
+#	ifdef __UINT_LEAST16_C
+#	define UINT_LEAST16_C __UINT_LEAST16_C
+#	else
+#	define UINT_LEAST16_C( VAL ) VAL##u
+#	endif
+#endif
+
+#ifndef INT_LEAST16_C
+#	ifdef __INT_LEAST16_C
+#	define INT_LEAST16_C __INT_LEAST16_C
+#	else
+#	define INT_LEAST16_C( VAL ) VAL
+#	endif
+#endif
+
+#ifndef UINT_LEAST16_MAX
+#	ifdef __UINT_LEAST16_MAX__
+#	define UINT_LEAST16_MAX __UINT_LEAST16_MAX__
+#	else
+#	define UINT_LEAST16_MAX (~UINT_LEAST16_C(0))
+#	endif
+#endif
+
+#ifndef INT_LEAST16_MAX
+#	ifdef __INT_LEAST16_MAX__
+#	define INT_LEAST16_MAX __INT_LEAST16_MAX__
+#	else
+#	define INT_LEAST16_MAX (INT_LEAST16_C(0) | (UINT_LEAST16_MAX >> 1))
+#	endif
+#endif
+
+#ifndef INT_LEAST16_MIN
+#	ifdef __INT_LEAST16_MIN__
+#	define INT_LEAST16_MIN __INT_LEAST16_MIN__
+#	else
+#	define INT_LEAST16_MIN (INT_LEAST16_C(-1) ^ INT_LEAST16_MAX)
 #	endif
 #endif
 
@@ -403,7 +575,11 @@ typedef unsigned INT_LEAST16_TYPE uint_least16_t;
 #if MCC_CPU_WORD_WIDTH >= 32
 #ifndef INT_LEAST32_WIDTH
 #ifdef __INT_LEAST32_WIDTH__
-#define INT_LEAST32_WIDTH
+#define INT_LEAST32_WIDTH __INT_LEAST32_WIDTH__
+#elif (~0u) >> 31
+#define INT_LEAST32_WIDTH INT_WIDTH
+#else
+#define INT_LEAST32_WIDTH LONG_WIDTH
 #endif
 #endif
 
@@ -426,6 +602,50 @@ typedef unsigned INT_LEAST16_TYPE uint_least16_t;
 #	define INT_LEAST32_WIDTH LONG_WIDTH
 #	define PRI_LEAST32 "l"
 #	define SCN_LEAST32 "l"
+#	endif
+#endif
+
+#ifndef UINT_LEAST32_C
+#	ifdef __UINT_LEAST32_C
+#	define UINT_LEAST32_C __UINT_LEAST32_C
+#	elif (~0u) >> 31
+#	define UINT_LEAST32_C( VAL ) VAL##u
+#	else
+#	define UINT_LEAST32_C( VAL ) VAL##ul
+#	endif
+#endif
+
+#ifndef INT_LEAST32_C
+#	ifdef __INT_LEAST32_C
+#	define INT_LEAST32_C __INT_LEAST32_C
+#	elif (~0u) >> 31
+#	define INT_LEAST32_C( VAL ) VAL
+#	else
+#	define INT_LEAST32_C( VAL ) VAL##l
+#	endif
+#endif
+
+#ifndef UINT_LEAST32_MAX
+#	ifdef __UINT_LEAST32_MAX__
+#	define UINT_LEAST32_MAX __UINT_LEAST32_MAX__
+#	else
+#	define UINT_LEAST32_MAX (~UINT_LEAST32_C(0))
+#	endif
+#endif
+
+#ifndef INT_LEAST32_MAX
+#	ifdef __INT_LEAST32_MAX__
+#	define INT_LEAST32_MAX __INT_LEAST32_MAX__
+#	else
+#	define INT_LEAST32_MAX (INT_LEAST32_C(0) | (UINT_LEAST32_MAX >> 1))
+#	endif
+#endif
+
+#ifndef INT_LEAST32_MIN
+#	ifdef __INT_LEAST32_MIN__
+#	define INT_LEAST32_MIN __INT_LEAST32_MIN__
+#	else
+#	define INT_LEAST32_MIN (INT_LEAST32_C(-1) ^ INT_LEAST32_MAX)
 #	endif
 #endif
 
@@ -493,9 +713,15 @@ typedef unsigned INT_LEAST32_TYPE uint_least32_t;
 
 #if MCC_CPU_WORD_WIDTH >= 64
 #ifndef INT_LEAST64_WIDTH
-#ifdef __INT_LEAST64_WIDTH__
-#define INT_LEAST64_WIDTH
-#endif
+#	ifdef __INT_LEAST64_WIDTH__
+#	define INT_LEAST64_WIDTH __INT_LEAST32_WIDTH__
+#	elif (~0u) >> 63
+#	define INT_LEAST32_WIDTH INT_WIDTH
+#	elif (~0ul) >> 63
+#	define INT_LEAST32_WIDTH LONG_WIDTH
+#	else
+#	define INT_LEAST64_WIDTH LLONG_WIDTH
+#	endif
 #endif
 
 #ifndef INT_LEAST64_TYPE
@@ -514,6 +740,54 @@ typedef unsigned INT_LEAST32_TYPE uint_least32_t;
 #	define INT_LEAST64_WIDTH LLONG_WIDTH
 #	define PRI_LEAST64 "ll"
 #	define SCN_LEAST64 "ll"
+#	endif
+#endif
+
+#ifndef UINT_LEAST64_C
+#	ifdef __UINT_LEAST64_C
+#	define UINT_LEAST64_C __UINT_LEAST64_C
+#	elif (~0u) >> 63
+#	define UINT_LEAST64_C( VAL ) VAL##u
+#	elif (~0ul) >> 63
+#	define UINT_LEAST64_C( VAL ) VAL##ul
+#	else
+#	define UINT_LEAST64_C( VAL ) VAL##ull
+#	endif
+#endif
+
+#ifndef INT_LEAST64_C
+#	ifdef __INT_LEAST64_C
+#	define INT_LEAST64_C __INT_LEAST64_C
+#	elif (~0u) >> 63
+#	define INT_LEAST64_C( VAL ) VAL
+#	elif (~0ul) >> 63
+#	define INT_LEAST64_C( VAL ) VAL##l
+#	else
+#	define INT_LEAST64_C( VAL ) VAL##ll
+#	endif
+#endif
+
+#ifndef UINT_LEAST64_MAX
+#	ifdef __UINT_LEAST64_MAX__
+#	define UINT_LEAST64_MAX __UINT_LEAST64_MAX__
+#	else
+#	define UINT_LEAST64_MAX (~UINT_LEAST64_C(0))
+#	endif
+#endif
+
+#ifndef INT_LEAST64_MAX
+#	ifdef __INT_LEAST64_MAX__
+#	define INT_LEAST64_MAX __INT_LEAST64_MAX__
+#	else
+#	define INT_LEAST64_MAX (INT_LEAST64_C(0) | (UINT_LEAST64_MAX >> 1))
+#	endif
+#endif
+
+#ifndef INT_LEAST64_MIN
+#	ifdef __INT_LEAST64_MIN__
+#	define INT_LEAST64_MIN __INT_LEAST64_MIN__
+#	else
+#	define INT_LEAST64_MIN (INT_LEAST64_C(-1) ^ INT_LEAST64_MAX)
 #	endif
 #endif
 
