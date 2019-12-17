@@ -1,36 +1,220 @@
 #ifndef MCC_STDINT_H
 #define MCC_STDINT_H
 
-#ifndef MCC_IS_ROOT_INC
-#ifdef MCC_SYS_IS_WINDOWS
-#include <BaseTsd.h>
-#elif defined( MCC_SYS_LINUX )
-#include <linux/stdint.h>
-#else
-#include <stdint.h>
-#endif
-#endif
-
 #include "limits.h"
 
-#ifdef MCC_SYS_LLP64
-#define MCC_INTPTR_TYPE long long
-#define MCC_UINTPTR_TYPE unsigned long long
-#define MCC_PRI_INTPTR "ll"
-#define MCC_SCN_INTPTR "ll"
-#else
-#define MCC_INTPTR_TYPE long
-#define MCC_UINTPTR_TYPE unsigned long
-#define MCC_PRI_INTPTR "l"
-#define MCC_SCN_INTPTR "l"
+#ifndef MCC_IS_ROOT_INC
+#	ifdef MCC_SYS_WINDOWS_OS
+#	include <BaseTsd.h>
+#	elif defined( MCC_SYS_LINUX )
+#	include <linux/stdint.h>
+#	include <linux/inttypes.h>
+#	else
+#	include <stdint.h>
+#	include <inttypes.h>
+#	endif
 #endif
 
-#ifndef MCC_IS_ROOT_INC
-#ifdef MCC_SYS_WINDOWS_OS
-#include <BaseTsd.h>
-#else
-#include <inttypes.h>
+#ifndef INTPTR_TYPE
+#	ifdef __INTPTR_TYPE__
+#	define INTPTR_TYPE __INTPTR_TYPE__
+#	elif defined( MCC_SYS_LLP64 )
+#	define INTPTR_TYPE long long
+#	else
+#	define INTPTR_TYPE long
+#	endif
 #endif
+
+#ifndef __intptr_t_defined
+#define __intptr_t_defined
+typedef signed INTPTR_TYPE intptr_t;
+#endif
+
+#ifndef __uintptr_t_defined
+#define __uintptr_t_defined
+typedef unsigned INTPTR_TYPE uintptr_t;
+#endif
+
+#ifndef SIZEOF_INTPTR
+#	ifdef __SIZEOF_INTPTR__
+#	define SIZEOF_INTPTR __SIZEOF_INTPTR__
+#	elif defined( MCC_SYS_LLP64 )
+#	define SIZEOF_INTPTR SIZEOF_LLONG
+#	else
+#	define SIZEOF_INTPTR SIZEOF_LONG
+#	endif
+#endif
+
+#ifndef INTPTR_WIDTH
+#	ifdef __INTPTR_WIDTH__
+#	define INTPTR_WIDTH __INTPTR_WIDTH__
+#	elif defined( MCC_SYS_LLP64 )
+#	define INTPTR_WIDTH LLONG_WIDTH
+#	else
+#	define INTPTR_WIDTH LONG_WIDTH
+#	endif
+#endif
+
+#ifndef PRI_INTPTR
+#	ifdef __PRI_INTPTR__
+#	define PRI_INTPTR __PRI_INTPTR__
+#	elif defined( MCC_SYS_LLP64 )
+#	define PRI_INTPTR "ll"
+#	else
+#	define PRI_INTPTR "l"
+#	endif
+#endif
+
+#ifndef SCN_INTPTR
+#	ifdef __SCN_INTPTR__
+#	define SCN_INTPTR __SCN_INTPTR__
+#	elif defined( MCC_SYS_LLP64 )
+#	define SCN_INTPTR "ll"
+#	else
+#	define SCN_INTPTR "l"
+#	endif
+#endif
+
+#ifndef PRIXINTPTR
+#define PRIXINTPTR PRI_INTPTR "X"
+#endif
+#ifndef PRIdINTPTR
+#define PRIdINTPTR PRI_INTPTR "d"
+#endif
+#ifndef PRIiINTPTR
+#define PRIiINTPTR PRI_INTPTR "d"
+#endif
+#ifndef PRIoINTPTR
+#define PRIoINTPTR PRI_INTPTR "o"
+#endif
+#ifndef PRIuINTPTR
+#define PRIuINTPTR PRI_INTPTR "u"
+#endif
+#ifndef PRIxINTPTR
+#define PRIxINTPTR PRI_INTPTR "x"
+#endif
+#ifndef SCNXINTPTR
+#define SCNXINTPTR PRI_INTPTR "X"
+#endif
+#ifndef SCNdINTPTR
+#define SCNdINTPTR SCN_INTPTR "d"
+#endif
+#ifndef SCNiINTPTR
+#define SCNiINTPTR SCN_INTPTR "d"
+#endif
+#ifndef SCNoINTPTR
+#define SCNoINTPTR SCN_INTPTR "o"
+#endif
+#ifndef SCNuINTPTR
+#define SCNuINTPTR SCN_INTPTR "u"
+#endif
+#ifndef SCNxINTPTR
+#define SCNxINTPTR SCN_INTPTR "x"
+#endif
+
+#ifndef INTMAX_TYPE
+#	ifdef __INTMAX_TYPE__
+#	define INTMAX_TYPE __INTMAX_TYPE__
+#	elif defined( MCC_HAVE_LLONG ) && LLONG_MAX > LONG_MAX
+#	define INTMAX_TYPE long long
+#	else
+#	define INTMAX_TYPE long
+#	endif
+#endif
+
+#ifndef __intmax_t_defined
+#define __intmax_t_defined
+typedef signed INTMAX_TYPE intmax_t;
+#endif
+
+#ifndef __uintmax_t_defined
+#define __uintmax_t_defined
+typedef unsigned INTMAX_TYPE uintmax_t;
+#endif
+
+#ifndef SIZEOF_INTMAX
+#	ifdef __SIZEOF_INTMAX__
+#	define SIZEOF_INTMAX __SIZEOF_INTMAX__
+#	elif defined( MCC_HAVE_LLONG ) && LLONG_MAX > LONG_MAX
+#	define SIZEOF_INTMAX SIZEOF_LLONG
+#	else
+#	define SIZEOF_INTMAX SIZEOF_LONG
+#	endif
+#endif
+
+#ifndef INTMAX_WIDTH
+#	ifdef __INTMAX_WIDTH__
+#	define INTMAX_WIDTH __INTMAX_WIDTH__
+#	elif defined( MCC_HAVE_LLONG ) && LLONG_MAX > LONG_MAX
+#	define INTMAX_WIDTH LLONG_WIDTH
+#	else
+#	define INTMAX_WIDTH LONG_WIDTH
+#	endif
+#endif
+
+#ifndef PRI_INTMAX
+#	ifdef __PRI_INTMAX__
+#	define PRI_INTMAX __PRI_INTMAX__
+#	elif defined( MCC_HAVE_LLONG ) && LLONG_MAX > LONG_MAX
+#	define PRI_INTMAX "ll"
+#	else
+#	define PRI_INTMAX "l"
+#	endif
+#endif
+
+#ifndef SCN_INTMAX
+#	ifdef __SCN_INTMAX__
+#	define SCN_INTMAX __SCN_INTMAX__
+#	elif defined( MCC_HAVE_LLONG ) && LLONG_MAX > LONG_MAX
+#	define SCN_INTMAX "ll"
+#	else
+#	define SCN_INTMAX "l"
+#	endif
+#endif
+
+#ifndef PRIXINTMAX
+#define PRIXINTMAX PRI_INTMAX "X"
+#endif
+#ifndef PRIdINTMAX
+#define PRIdINTMAX PRI_INTMAX "d"
+#endif
+#ifndef PRIiINTMAX
+#define PRIiINTMAX PRI_INTMAX "d"
+#endif
+#ifndef PRIoINTMAX
+#define PRIoINTMAX PRI_INTMAX "o"
+#endif
+#ifndef PRIuINTMAX
+#define PRIuINTMAX PRI_INTMAX "u"
+#endif
+#ifndef PRIxINTMAX
+#define PRIxINTMAX PRI_INTMAX "x"
+#endif
+#ifndef SCNXINTMAX
+#define SCNXINTMAX PRI_INTMAX "X"
+#endif
+#ifndef SCNdINTMAX
+#define SCNdINTMAX SCN_INTMAX "d"
+#endif
+#ifndef SCNiINTMAX
+#define SCNiINTMAX SCN_INTMAX "d"
+#endif
+#ifndef SCNoINTMAX
+#define SCNoINTMAX SCN_INTMAX "o"
+#endif
+#ifndef SCNuINTMAX
+#define SCNuINTMAX SCN_INTMAX "u"
+#endif
+#ifndef SCNxINTMAX
+#define SCNxINTMAX SCN_INTMAX "x"
+#endif
+
+#ifndef __imaxdiv_t_defined
+#define __imaxdiv_t_defined
+typedef struct imaxdiv {
+	intmax_t quo;
+	intmax_t rem;
+} imaxdiv_t;
 #endif
 
 #ifndef INT_LEAST8_WIDTH
