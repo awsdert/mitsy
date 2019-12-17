@@ -201,7 +201,7 @@
 #	elif defined( __SHORT_WIDTH__ )
 #	define SHRT_WIDTH __SHORT_WIDTH__
 #	else
-#	define SHRT_WIDTH (SIZEOF_SHRT * MCC_CPU_CHAR_WIDTH)
+#	define SHRT_WIDTH (SIZEOF_SHRT * CHAR_BIT)
 #	endif
 #endif
 
