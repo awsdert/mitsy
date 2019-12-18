@@ -81,7 +81,7 @@
 #		elif defined( __LONG_LONG_MAX__ )
 #		define LLONG_MAX __LONG_LONG_MAX__
 #		else
-#		define LLONG_MAX (0ll | (ULLONG_MAX >> 1))
+#		define LLONG_MAX (~(~0ll << (LLONG_WIDTH - 1)))
 #		endif
 #	endif
 #	ifndef LLONG_MIN
@@ -89,8 +89,10 @@
 #		define LLONG_MIN __LLONG_MIN__
 #		elif defined( __LONG_LONG_MIN__ )
 #		define LLONG_MIN __LONG_LONG_MIN__
+#		elif ((-LLONG_MAX)-1) < (-LLONG_MAX)
+#		define LLONG_MIN ((-LLONG_MAX)-1)
 #		else
-#		define LLONG_MIN (-1 ^ LLONG_MAX)
+#		define LLONG_MIN (-LLONG_MAX)
 #		endif
 #	endif
 #endif
@@ -107,6 +109,7 @@
 #	define SIZEOF_LONG 8
 #	else
 #	define SIZEOF_LONG 4
+#	endif
 #endif
 
 #ifndef LONG_WIDTH
@@ -128,14 +131,16 @@
 #	if defined( __LONG_MAX__ ) && __LONG_MAX__ > 0
 #	define LONG_MAX __LONG_MAX__
 #	else
-#	define LONG_MAX (0l | (ULONG_MAX >> 1))
+#	define LONG_MAX (~(~0l << (LONG_WIDTH - 1)))
 #	endif
 #endif
 #ifndef LONG_MIN
 #	if defined( __LONG_MIN__ ) && __LONG_MIN__ < 0
 #	define LONG_MIN __LONG_MIN__
+#	elif ((-LONG_MAX)-1) < (-LONG_MAX)
+#	define LONG_MIN ((-LONG_MAX)-1)
 #	else
-#	define LONG_MIN (-1 ^ LONG_MAX)
+#	define (-LONG_MAX)
 #	endif
 #endif
 
@@ -171,14 +176,16 @@
 #		ifdef __INT_MAX__
 #		define INT_MAX __INT_MAX__
 #		else
-#		define INT_MAX (0 | (UINT_MAX >> 1))
+#		define INT_MAX (~(~0 << (INT_WIDTH - 1)))
 #		endif
 #	endif
 #	ifndef INT_MIN
 #		if defined( __INT_MIN__ ) && __INT_MIN__ < 0
 #		define INT_MIN __INT_MIN__
+#		elif ((-INT_MAX)-1) < (-INT_MAX)
+#		define INT_MIN ((-INT_MAX)-1)
 #		else
-#		define INT_MIN (-1 ^ INT_MAX)
+#		define INT_MIN (-INT_MAX)
 #		endif
 #	endif
 #endif
@@ -193,6 +200,7 @@
 #	define SIZEOF_SHRT 4
 #	else
 #	define SIZEOF_SHRT 2
+#	endif
 #endif
 
 #ifndef SHRT_WIDTH
@@ -218,14 +226,16 @@
 #	ifdef __SHRT_MAX__
 #	define SHRT_MAX __SHRT_MAX__
 #	else
-#	define SHRT_MAX (0 | (USHRT_MAX >> 1))
+#	define SHRT_MAX (~(~0 << (SHRT_WIDTH - 1)))
 #	endif
 #endif
 #ifndef SHRT_MIN
 #	ifdef __SHRT_MIN__
 #	define SHRT_MIN __SHRT_MIN__
+#	elif INT_MIN < (-INT_MAX)
+#	define SHRT_MIN ((-SHRT_MAX)-1)
 #	else
-#	define SHRT_MIN (-1 ^ SHRT_MAX)
+#	define SHRT_MIN (-SHRT_MAX)
 #	endif
 #endif
 
@@ -248,14 +258,16 @@
 #	ifdef __SCHAR_MAX__
 #	define SCHAR_MAX __SCHAR_MAX__
 #	else
-#	define SCHAR_MAX (0 | (UCHAR_MAX >> 1))
+#	define SCHAR_MAX (~(~0 << (CHAR_WIDTH - 1)))
 #	endif
 #endif
 #ifndef SCHAR_MIN
 #	ifdef __SCHAR_MIN__
 #	define SCHAR_MIN __SCHAR_MIN__
+#	elif INT_MIN < (-INT_MAX)
+#	define SCHAR_MIN ((-SCHAR_MAX)-1)
 #	else
-#	define SCHAR_MIN (-1 ^ SCHAR_MAX)
+#	define SCHAR_MIN (-SCHAR_MAX)
 #	endif
 #endif
 
