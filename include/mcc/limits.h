@@ -1,7 +1,7 @@
 #ifndef MCC_LIMITS_H
 #define MCC_LIMITS_H
 
-#include <mcc/sys.h>
+#include <mcc/core/sys.h>
 
 #ifndef MCC_IS_ROOT_INC
 #ifdef MCC_SYS_WINDOWS_OS
@@ -195,6 +195,7 @@
 #	define SIZEOF_SHRT __SIZEOF_SHRT__
 #	elif defined( __SIZEOF_SHORT__ )
 #	define SIZEOF_SHRT __SIZEOF_SHORT__
+#	elif defined( MCC_SYS_SILP64 )
 #	define SIZEOF_SHRT 8
 #	elif defined( MCC_SYS_SILP32 )
 #	define SIZEOF_SHRT 4
