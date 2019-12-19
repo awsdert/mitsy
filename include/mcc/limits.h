@@ -17,7 +17,8 @@
 #if MCC_STDC_VER >= 199900l
 #define MCC_HAVE_LLONG
 #endif
-#elif defined( MCC_SYS_LLP64 ) || defined( __mitsy__ )
+#elif defined( MCC_DM_LLP64 ) || defined( __mitsy__ ) \
+	defined( MCC__DM_ilp32ll64 ) || defined( MCC__DM_ILP32LL64 )
 #define MCC_HAVE_LLONG
 #elif defined( __LLONG_MIN__ ) && __LLONG_MIN__ < 0
 #define MCC_HAVE_LLONG
@@ -284,18 +285,18 @@
 #endif
 
 #ifndef CHAR_MAX
-#ifdef UNSIGNED_CHAR
-#define CHAR_MAX UCHAR_MAX
-#else
-#define CHAR_MAX SCHAR_MAX
-#endif
+#	ifdef UNSIGNED_CHAR
+#	define CHAR_MAX UCHAR_MAX
+#	else
+#	define CHAR_MAX SCHAR_MAX
+#	endif
 #endif
 #ifndef CHAR_MIN
-#ifdef UNSIGNED_CHAR
-#define CHAR_MAX 0
-#else
-#define CHAR_MAX SCHAR_MIN
-#endif
+#	ifdef UNSIGNED_CHAR
+#	define CHAR_MAX 0
+#	else
+#	define CHAR_MAX SCHAR_MIN
+#	endif
 #endif
 
 #endif

@@ -244,27 +244,27 @@
 #endif
 
 #if defined( __lp64__ )
-#define MCC__SYS_lp64
+#define MCC__DM_lp64
 #elif defined( __lp64 )
-#define MCC__SYS_lp64
+#define MCC__DM_lp64
 #elif defined( _lp64_ )
-#define MCC__SYS_lp64
+#define MCC__DM_lp64
 #elif defined( _lp64_ )
-#define MCC__SYS_lp64
+#define MCC__DM_lp64
 #elif defined( lp64 )
-#define MCC__SYS_lp64
+#define MCC__DM_lp64
 #endif
 
 #if defined( __LP64__ )
-#define MCC__SYS_LP64
+#define MCC__DM_LP64
 #elif defined( __LP64 )
-#define MCC__SYS_LP64
+#define MCC__DM_LP64
 #elif defined( _LP64_ )
-#define MCC__SYS_LP64
+#define MCC__DM_LP64
 #elif defined( _LP64_ )
-#define MCC__SYS_LP64
+#define MCC__DM_LP64
 #elif defined( LP64 )
-#define MCC__SYS_LP64
+#define MCC__DM_LP64
 #endif
 
 #if defined( __silp32__ )
