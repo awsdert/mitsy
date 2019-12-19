@@ -332,6 +332,8 @@
 #elif defined( MCC__DM_lp32 ) || defined( MCC__DM_LP32 ) \
 	|| defined( MCC__DM_i16lp32 ) || defined( MCC__DM_I16LP32 )
 #define MCC_DM_LP32
+#elif defined( MCC__DM_ip16 ) || defined( MCC__DM_IP16 )
+#define MCC_DM_IP16
 #elif defined( MCC_SYS_AIX )
 #ifdef MCC_SYS_64BIT
 #define MCC_DM_LP64
