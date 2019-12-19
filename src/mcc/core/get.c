@@ -421,12 +421,12 @@ int mcc_iconv( MCC_ICONV_TOK *tok ) {
 	tok->dst.done = tok->dst.size - tok->dst.left;
 	return ret;
 }
-int mcc_getall( MCC_POS *src, MCC_CH8 *dst,
+int mcc_getall( mcc_vpos_t *src, MCC_CH8 *dst,
 	mcc_char_info_t mcc_char_info ) {
 	int ret = mcc_char_info_test(mcc_char_info);
 	MCC_ICONV_TOK tok;
-	MCC_VEC *srcv, *dstv;
-	MCC_MEM *srcm, *dstm;
+	mcc_vec_t *srcv, *dstv;
+	mcc_mem_t *srcm, *dstm;
 	if ( !src || !dst ) return EDESTADDRREQ;
 	srcv = &(src->vec);
 	srcm = &(srcv->mem);
@@ -474,9 +474,9 @@ int mcc___gettext(
 {
 	int ret;
 	char *text;
-	MCC_POS tmp = {0};
-	MCC_VEC *dstv, *tmpv;
-	MCC_MEM *dstm, *tmpm;
+	mcc_vpos_t tmp = {0};
+	mcc_vec_t *dstv, *tmpv;
+	mcc_mem_t *dstm, *tmpm;
 	size_t read, byte, temp;
 	long leng, use;
 	if ( !dst || !_read || !_last ) return EDESTADDRREQ;
@@ -533,7 +533,7 @@ int mcc___gettext(
 	ret = mcc_vecsize( tmpv, 0, mcc_char_info.size );
 	return ret;
 }
-int mcc__gettext( MCC_POS *src, MCC_CH8 *dst,
+int mcc__gettext( mcc_vpos_t *src, MCC_CH8 *dst,
 	mcc_char_info_t mcc_char_info ) {
 	return mcc___gettext( src, dst, mcc_char_info,
 		(func_mcc__read)mcc_posread, (func_mcc__last)mcc_poslast );
@@ -582,8 +582,8 @@ int mcc___getline( void *src, MCC_CH8 *dst,
 	intmax_t c = 0;
 	char *cb, *more;
 	mcc_ch8_t ch8, *txt;
-	MCC_VEC *dstv;
-	MCC_MEM *dstm;
+	mcc_vec_t *dstv;
+	mcc_mem_t *dstm;
 	MCC_ICONV_TOK tok;
 	MCC_ICONV_MEM nil = {0};
 	size_t read, size;
@@ -646,7 +646,7 @@ int mcc___getline( void *src, MCC_CH8 *dst,
 	dstv->use = tok.dst.done / sizeof(mcc_ch8_t);
 	return ret;
 }
-int mcc__getline( MCC_POS *src, MCC_CH8 *dst,
+int mcc__getline( mcc_vpos_t *src, MCC_CH8 *dst,
 	mcc_char_info_t mcc_char_info ) {
 	return mcc___getline( src, dst, mcc_char_info,
 		(func_mcc__read)mcc_posread, (func_mcc__last)mcc_poslast );
@@ -695,8 +695,8 @@ int mcc___getword( void *src, MCC_CH8 *dst,
 	intmax_t c = 0;
 	char *cb, *more;
 	mcc_ch8_t ch8, *txt;
-	MCC_VEC *dstv;
-	MCC_MEM *dstm;
+	mcc_vec_t *dstv;
+	mcc_mem_t *dstm;
 	MCC_ICONV_TOK tok;
 	MCC_ICONV_MEM nil = {0};
 	size_t read, size;
@@ -765,7 +765,7 @@ int mcc___getword( void *src, MCC_CH8 *dst,
 	dstv->use = tok.dst.done / sizeof(mcc_ch8_t);
 	return ret;
 }
-int mcc__getword( MCC_POS *src, MCC_CH8 *dst,
+int mcc__getword( mcc_vpos_t *src, MCC_CH8 *dst,
 	mcc_char_info_t mcc_char_info ) {
 	return mcc___getword( src, dst, mcc_char_info,
 		(func_mcc__read)mcc_posread, (func_mcc__last)mcc_poslast );
@@ -851,7 +851,7 @@ int mcc___getchar( void *src, mcc_utf_t dst, long *len,
 	}
 	return ret;
 }
-int mcc__getchar( MCC_POS *src, mcc_utf_t dst, long *len,
+int mcc__getchar( mcc_vpos_t *src, mcc_utf_t dst, long *len,
 	mcc_char_info_t mcc_char_info )
 {
 	return mcc___getchar( src, dst, len, mcc_char_info,

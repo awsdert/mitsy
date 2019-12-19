@@ -79,7 +79,7 @@ int find_mcc_encoding();
 void shut_mcc_encodings();
 int open_mcc_encodings();
 
-typedef MCC_POS MCC_STR, MCC_WCS, MCC_CH8, MCC_C16, MCC_C32;
+typedef mcc_vpos_t MCC_STR, MCC_WCS, MCC_CH8, MCC_C16, MCC_C32;
 
 enum {
 	MCC_CHAR_TYPE_ASCII = 0,

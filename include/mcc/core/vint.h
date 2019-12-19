@@ -57,6 +57,7 @@ typedef struct mcc__vint {
 	int exit;
 	size_t size;
 	mcc_bit_t zero, stop, sign;
+	mcc_vec_t buff;
 } mcc_vint_t, mcc_uvint_t;
 
 /** @brief Converts a character to it's integer equivalent

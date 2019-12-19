@@ -1,6 +1,4 @@
-#include <limits.h>
-#include <inttypes.h>
-#include "mcc_vint.h"
+#include <mcc/core/vint.h>
 
 int mcc_geti( long c, long l, long h ) {
 	if ( c >= '0' && c <= '9' )
@@ -51,7 +49,7 @@ mcc_bit_t mcc_bit_op_dec_for_bit( mcc_bit_t stop, mcc_bit_t zero ) {
 	}
 	return stop;
 }
-#define MCC_BIT_SLOW
+//#define MCC_BIT_SLOW
 mcc_bit_t mcc__bit_op_add( mcc_bit_t num, mcc_vint_seg_t bits ) {
 #ifdef MCC_BIT_SLOW
 	while ( bits-- ) {
@@ -120,55 +118,6 @@ int mcc_bit_op_cmp( mcc_bit_t num, mcc_bit_t val ) {
 	if ( num.b < val.b ) return -1;
 	return 0;
 }
-
-#ifndef INC_BITMATH
-int test( mcc_test_t num, char *op, mcc_test_t val );
-
-char *operations[] = {
-	"==", "!=", "!", ">", ">=", "<", "<=",
-	"~", "<<", ">>", "|", "&", "^",
-	"++", "+", "*", "--", "-", "/", "%",
-NULL };
-
-typedef time_t mcc_rnd_t;
-long mcc__rnd( mcc_rnd_t *ctx, long min, long max ) {
-	/* With bit unitialised it should be much harder to predict
-	 * if 1 or 0 will be recieved */
-	mcc_rnd_t bit = 1, seed = time(NULL), mov = 0;
-	long val;
-	if ( ctx ) mov = *ctx;
-	bit <<= mov++;
-	if ( !bit || bit > seed ) {
-		bit = 1;
-		mov = 0;
-	}
-	val = (seed & bit) ? 1 : 0;
-	bit <<= 1;
-	if ( ctx ) *ctx = mov;
-	if ( min > max ) min = max;
-	if ( min != max ) {
-		seed *= clock();
-		bit = ~((~0u) << mov);
-		val = (seed & bit);
-		if ( val > max ) val = max;
-		val -= (min >= 0) ? min : -min;
-		return ( val < min ) ? min : val;
-	}
-	return val ? max : min;
-}
-#define mcc_rnd( ctx ) mcc__rnd( ctx, LONG_MIN, LONG_MAX )
-
-int main() {
-	mcc_test_t i, j;
-	mcc_rnd_t ctx;
-	for ( j = 0; j < 10; ++j ) {
-		for ( i = 0; operations[i]; ++i ) {
-			test( mcc_rnd(&ctx), operations[i], mcc_rnd(&ctx) );
-		}
-	}
-	return 0;
-}
-#endif
 
 int mcc_vint_validate( struct mcc__vint *num ) {
 	if ( !num || !(num->zero.seg) || !(num->stop.seg) )
@@ -428,7 +377,7 @@ int mcc___vint_op_shl( struct mcc__vint num, mcc_vint_seg_t bits ) {
 	}
 	return ret;
 }
-int mcc___vint_op_shr( struct mcc__vint num, mcc_vint_seg_t bits ) {
+int mcc___vint_op_shr( struct mcc__vint num, mcc_vint_seg_t bits, mcc_vint_seg_t neg ) {
 	int ret = mcc_vint_validate( &num );
 	mcc_bit_t n, v;
 	mcc_vint_seg_t max_bits;
@@ -441,6 +390,8 @@ int mcc___vint_op_shr( struct mcc__vint num, mcc_vint_seg_t bits ) {
 	v = mcc__bit_op_add( n, bits );
 	while ( v.b < num.stop.b ) {
 		if ( *(v.seg) & v.bit )
+			*(n.seg) |= n.bit;
+		else if ( neg )
 			*(n.seg) |= n.bit;
 		else if ( *(n.seg) & n.bit )
 			*(n.seg) ^= n.bit;
@@ -640,7 +591,7 @@ int mcc___vint_op_div( struct mcc__vint num, struct mcc__vint val, struct mcc__v
 			*(quo.seg) |= quo.bit;
 		}
 		/* Fallback for poorly programmed code */
-		//if ( quo.b == num.zero.b ) break;
+		//if ( seg.zero.b == num.zero.b ) break;
 	}
 	return ret;
 }
@@ -654,6 +605,7 @@ int mcc__vint_op_div( struct mcc__vint num, struct mcc__vint val ) {
 	(void)mcc_vint_size( &rem, 0 );
 	return ret;
 }
+#if 0
 int mcc__vint_op_mod( struct mcc__vint num, struct mcc__vint val ) {
 	int ret = mcc_vint_validate2( &num, &val );
 	struct mcc__vint rem = {0};
@@ -665,6 +617,28 @@ int mcc__vint_op_mod( struct mcc__vint num, struct mcc__vint val ) {
 	(void)mcc_vint_size( &rem, 0 );
 	return ret;
 }
+#else
+int mcc__vint_op_mod( struct mcc__vint num, struct mcc__vint val ) {
+	int ret = mcc_vint_validate2( &num, &val );
+	struct mcc__vint seg = {0}, tmp = {0};
+	if ( ret != EXIT_SUCCESS ) return ret;
+	if ( mcc__vint_is_nil( val ) ) return EXIT_SUCCESS;
+	tmp = val;
+	tmp.stop = mcc_bit_op_inc(mcc_bit_op_dec_for_bit( tmp.stop, tmp.zero ));
+	seg = num;
+	seg.zero = seg.stop;
+	while ( mcc__vint_is_gte( num, tmp ) ) {
+		seg.zero = mcc_bit_op_dec(seg.zero);
+		if ( mcc__vint_is_gte( seg, tmp ) ) {
+			if ( mcc__vint_op_sub( seg, tmp ) == EOVERFLOW )
+				ret = EOVERFLOW;
+		}
+		/* Fallback for poorly programmed code */
+		//if ( seg.zero.b == num.zero.b ) break;
+	}
+	return ret;
+}
+#endif
 
 int mcc__vint_op_shl( struct mcc__vint num, struct mcc__vint val ) {
 	int ret = mcc_vint_validate2( &num, &val );
@@ -684,7 +658,7 @@ int mcc__vint_op_shl( struct mcc__vint num, struct mcc__vint val ) {
 	}
 	return mcc___vint_op_shl(num, move );
 }
-int mcc__vint_op_shr( struct mcc__vint num, struct mcc__vint val ) {
+int mcc__vint_op_shr( struct mcc__vint num, struct mcc__vint val, bool neg ) {
 	int ret = mcc_vint_validate2( &num, &val );
 	struct mcc__vint tmp = {0}, cpy = {0};
 	mcc_vint_seg_t move = 0, bits = 0;
@@ -693,115 +667,8 @@ int mcc__vint_op_shr( struct mcc__vint num, struct mcc__vint val ) {
 	tmp = mcc_vint_wrap( 0, &bits, sizeof(bits) );
 	move = *(val.zero.seg);
 	if ( mcc__vint_is_gte( val, tmp ) ) {
-		ret = mcc_vint_size_and_fill( &cpy, val );
-		if ( ret != EXIT_SUCCESS ) return ret;
-		mcc___vint_op_shl( cpy, bits );
-		mcc___vint_op_shr( cpy, bits );
-		mcc_vint_size( &cpy, 0 );
+		ret = mcc__vint_op_mod( val, tmp );
 		if ( ret != EXIT_SUCCESS ) return ret;
 	}
-	return mcc___vint_op_shr( num, move );
+	return mcc___vint_op_shr( num, move, neg );
 }
-
-#ifndef INC_BITMATH
-int test( mcc_test_t num, char *op, mcc_test_t val ) {
-	int ret = EXIT_FAILURE;
-	mcc_test_t rem = num, b4 = num;
-	struct mcc__vint _num = {0}, _val = {0}, _rem = {0};
-	(void)mcc_vint_size_and_fill( &_num, &num, sizeof(num) );
-	(void)mcc_vint_size_and_fill( &_val, &val, sizeof(num) );
-	(void)mcc_vint_size_and_fill( &_rem, &num, sizeof(num) );
-	switch ( *op ) {
-		case 0: ret = EILSEQ; goto fail;
-		case '~': num = ~num; mcc__vint_op_not( &_num ); goto done;
-		case '|': num |= val; mcc__vint_op_aor( &_num, &_val ); goto done;
-		case '^': num ^= val; mcc__vint_op_xor( &_num, &_val ); goto done;
-		case '&': num &= val; mcc__vint_op_and( &_num, &_val ); goto done;
-		case '+':
-			if ( op[1] == '+' )
-				{ num++; mcc__vint_op_inc( &_num ); }
-			else
-				{ num += val; mcc__vint_op_add( &_num, &_val ); }
-			goto done;
-		case '*': num *= val; mcc__vint_op_mul( &_num, &_val ); goto done;
-		case '-':
-			if ( op[1] == '+' )
-				{ num--; mcc__vint_op_dec( &_num ); }
-			else
-				{ num -= val; mcc__vint_op_sub( &_num, &_val ); }
-			goto done;
-		case '/':
-			if ( val ) { rem %= val; num /= val; }
-			else { rem = num; num = 0; }
-			mcc___vint_op_div( &_num, &_val, &_rem );
-			goto done;
-		case '%':
-			if ( val ) { rem %= val; num = rem; }
-			else { rem = num; }
-			mcc___vint_op_div( &_num, &_val, &_rem );
-			memcpy( _num.zero.seg, _rem.zero.seg, _num.size );
-			goto done;
-		case '=':
-			if ( op[1] != '=' ) goto fail;
-			num = (num == val);
-			struct mcc__vinto_num( &_num, mcc__vint_is_eql( &_num, &_val ) );
-			goto done;
-		case '!':
-			if ( op[1] == '\0' ) {
-				num = !num;
-				struct mcc__vinto_num( &_num, mcc__vint_is_nil( &_num ) );
-			}
-			else if ( op[1] == '=' ) {
-				num = (num != val);
-				struct mcc__vinto_num( &_num, mcc__vint_is_neq( &_num, &_val ) );
-			}
-			goto done;
-		case '>':
-			if ( op[1] == '>' ) {
-				num >>= val;
-				mcc__vint_op_shr( &_num, &_val );
-			}
-			else if ( op[1] == '=' ) {
-				num = (num >= val);
-				struct mcc__vinto_num( &_num, mcc__vint_is_gte( &_num, &_val ) );
-			}
-			else {
-				num = (num > val);
-				struct mcc__vinto_num( &_num, mcc__vint_is_gth( &_num, &_val ) );
-			}
-			goto done;
-		case '<':
-			if ( op[1] == '<' ) {
-				num <<= val;
-				mcc__vint_op_shl( &_num, &_val );
-			}
-			else if ( op[1] == '=' ) {
-				num = (num <= val);
-				struct mcc__vinto_num( &_num, mcc__vint_is_lte( &_num, &_val ) );
-			}
-			else {
-				num = (num < val);
-				struct mcc__vinto_num( &_num, mcc__vint_is_lth( &_num, &_val ) );
-			}
-			goto done;
-	}
-	done:
-	if ( *((mcc_test_t*)(_num.zero.seg)) == num )
-		ret = EXIT_SUCCESS;
-	else
-		printf( "_num = %08" MCC_TEST_PRI_PFX "X, "
-			"num = %08" MCC_TEST_PRI_PFX "X, "
-			"b4 = %08" MCC_TEST_PRI_PFX "X, "
-			"val = %" MCC_TEST_PRI_PFX "u, "
-			"_rem = %08" MCC_TEST_PRI_PFX "X, "
-			"rem = %08" MCC_TEST_PRI_PFX "X "
-			"op = '%s'\n",
-			*((mcc_test_t*)(_num.zero.seg)), num, b4, val,
-			*((mcc_test_t*)(_rem.zero.seg)), rem, op );
-	fail:
-	mcc_vint_size( &_num, 0 );
-	mcc_vint_size( &_val, 0 );
-	mcc_vint_size( &_rem, 0 );
-	return ret;
-}
-#endif

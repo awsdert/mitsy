@@ -1,5 +1,5 @@
-#ifndef INC_MCC_MEM_H
-#define INC_MCC_MEM_H
+#ifndef INC_mcc_mem_t_H
+#define INC_mcc_mem_t_H
 #include <mcc/core/err.h>
 #include <mcc/bitsof.h>
 #include <mcc/malloc.h>
@@ -9,20 +9,20 @@ int mcc_set_int_min( void *dst, size_t bits );
 int mcc_set_uint_max( void *dst, size_t bits );
 
 typedef struct mcc_mem {
-	size_t size;
-	void 	*addr;
-} MCC_MEM;
+	size_t	size;
+	void *	addr;
+} mcc_mem_t;
 
 typedef struct mcc_vec {
 	long cap;
 	long use;
-	MCC_MEM mem;
-} MCC_VEC;
+	mcc_mem_t mem;
+} mcc_vec_t;
 
-typedef struct mcc_pos {
+typedef struct mcc_vpos {
 	long pos;
-	MCC_VEC vec;
-} MCC_POS;
+	mcc_vec_t vec;
+} mcc_vpos_t;
 
 int mcc_rawfill( void *dst, char c, size_t size );
 int mcc_rawcomp(
@@ -31,21 +31,21 @@ int mcc_rawcomp(
 size_t mcc_rawcopy(
 	void *dst, size_t dst_size,
 	void const *src, size_t src_size );
-MCC_MEM mcc_tomem( void *addr, size_t size );
-int mcc_memsize( MCC_MEM *mcc_mem, size_t size );
-MCC_MEM mcc_tovec( void *addr, size_t size, size_t pern );
-int mcc_vecsize( MCC_VEC *mcc_vec, size_t size, size_t pern );
-int mcc_vecclamp( MCC_VEC *mcc_vec );
-void* mcc_vecnode( MCC_VEC *mcc_vec, long pos, size_t pern );
-int mcc_posclamp( MCC_POS *mcc_pos );
-void* mcc_posnode( MCC_POS *mcc_pos, size_t pern );
-long mcc_postell( MCC_POS *mcc_pos );
-int mcc_posseek( MCC_POS *mcc_pos, long pos, int whence );
+mcc_mem_t mcc_tomem( void *addr, size_t size );
+int mcc_memsize( mcc_mem_t *mcc_mem, size_t size );
+mcc_mem_t mcc_tovec( void *addr, size_t size, size_t pern );
+int mcc_vecsize( mcc_vec_t *mcc_vec, size_t size, size_t pern );
+int mcc_vecclamp( mcc_vec_t *mcc_vec );
+void* mcc_vecnode( mcc_vec_t *mcc_vec, long pos, size_t pern );
+int mcc_posclamp( mcc_vpos_t *mcc_pos );
+void* mcc_posnode( mcc_vpos_t *mcc_pos, size_t pern );
+long mcc_postell( mcc_vpos_t *mcc_pos );
+int mcc_posseek( mcc_vpos_t *mcc_pos, long pos, int whence );
 typedef int (*func_mcc__last)( void *src );
 typedef size_t (*func_mcc__read)(
 	void *dst, size_t pern, size_t upto, void *src );
 /** @brief Replicates feof() behaviour **/
-int mcc_poslast( MCC_POS *mcc_pos );
+int mcc_poslast( mcc_vpos_t *mcc_pos );
 /** @brief Replicates fread() behaviour
  * @return
  * if dst is NULL errno is set and 0 returned.
@@ -53,6 +53,6 @@ int mcc_poslast( MCC_POS *mcc_pos );
  * bytes to read (node size * upto) will be clamped to the difference
  * between the current pos and the final position (src->vec.use)
 **/
-size_t mcc_posread( void *dst, size_t pern, size_t upto, MCC_POS *src );
+size_t mcc_posread( void *dst, size_t pern, size_t upto, mcc_vpos_t *src );
 
 #endif

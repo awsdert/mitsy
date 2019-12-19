@@ -40,7 +40,7 @@ int mcc_set_uint_max( void *dst, size_t bits ) {
 	return EXIT_SUCCESS;
 }
 
-int mcc_memsize( MCC_MEM *mcc_mem, size_t size ) {
+int mcc_memsize( mcc_mem_t *mcc_mem, size_t size ) {
 	int ret = EXIT_SUCCESS;
 	char *addr;
 	if ( !mcc_mem ) {
@@ -109,7 +109,7 @@ size_t mcc_rawcopy(
 	return i;
 }
 
-int mcc_vecsize( MCC_VEC *src, size_t size, size_t pern ) {
+int mcc_vecsize( mcc_vec_t *src, size_t size, size_t pern ) {
 	int ret;
 	size_t cap;
 	if ( !src ) {
@@ -127,7 +127,7 @@ int mcc_vecsize( MCC_VEC *src, size_t size, size_t pern ) {
 	}
 	return ret;
 }
-void* mcc_vecnode( MCC_VEC *mcc_vec, long pos, size_t pern ) {
+void* mcc_vecnode( mcc_vec_t *mcc_vec, long pos, size_t pern ) {
 	int ret = mcc_vecclamp( mcc_vec );
 	size_t byte;
 	char *buff;
@@ -138,10 +138,10 @@ void* mcc_vecnode( MCC_VEC *mcc_vec, long pos, size_t pern ) {
 	return &(buff[byte]);
 }
 
-int mcc_vecclamp( MCC_VEC *src ) {
+int mcc_vecclamp( mcc_vec_t *src ) {
 	if ( !src ) return EDESTADDRREQ;
 	if ( !(src->mem.addr) ) {
-		(void)memset( src, 0, sizeof(MCC_VEC) );
+		(void)memset( src, 0, sizeof(mcc_vec_t) );
 		return ENOMEM;
 	}
 	if ( src->cap < 0 ) src->cap = 0;
@@ -149,10 +149,10 @@ int mcc_vecclamp( MCC_VEC *src ) {
 	return EXIT_SUCCESS;
 }
 
-int mcc_posclamp( MCC_POS *src ) {
+int mcc_posclamp( mcc_vpos_t *src ) {
 	if ( !src ) return EDESTADDRREQ;
 	if ( !src->vec.mem.addr ) {
-		(void)memset( src, 0, sizeof(MCC_POS) );
+		(void)memset( src, 0, sizeof(mcc_vpos_t) );
 		return ENOMEM;
 	}
 	(void)mcc_vecclamp( &(src->vec) );
@@ -162,23 +162,23 @@ int mcc_posclamp( MCC_POS *src ) {
 	return EXIT_SUCCESS;
 }
 
-int mcc_poslast( MCC_POS *src ) {
+int mcc_poslast( mcc_vpos_t *src ) {
 	if ( mcc_posclamp( src ) != EXIT_SUCCESS ) return 1;
 	return ( src->pos >= src->vec.use ) ? 1 : 0;
 }
 
-void* mcc_posnode( MCC_POS *src, size_t pern ) {
+void* mcc_posnode( mcc_vpos_t *src, size_t pern ) {
 	int ret = mcc_posclamp( src );
 	if ( ret != EXIT_SUCCESS ) return NULL;
 	return mcc_vecnode( &(src->vec), src->pos, pern );
 }
 
-long mcc_postell( MCC_POS *mcc_pos ) {
+long mcc_postell( mcc_vpos_t *mcc_pos ) {
 	if ( !mcc_pos ) return -1;
 	mcc_posclamp(mcc_pos);
 	return mcc_pos->pos;
 }
-int mcc_posseek( MCC_POS *mcc_pos, long pos, int from ) {
+int mcc_posseek( mcc_vpos_t *mcc_pos, long pos, int from ) {
 	int ret;
 	if ( !mcc_pos ) {
 		ret = EDESTADDRREQ;
@@ -197,10 +197,10 @@ int mcc_posseek( MCC_POS *mcc_pos, long pos, int from ) {
 }
 
 size_t mcc_posread(
-	void *dst, size_t pern, size_t want, MCC_POS *src ) {
+	void *dst, size_t pern, size_t want, mcc_vpos_t *src ) {
 	size_t read, byte, left;
-	MCC_VEC *srcv;
-	MCC_MEM *srcm;
+	mcc_vec_t *srcv;
+	mcc_mem_t *srcm;
 	if ( !dst ) {
 		FAIL( stderr, EDESTADDRREQ, "" );
 		return 0;
