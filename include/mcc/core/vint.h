@@ -1,7 +1,8 @@
 #ifndef INC_MCC_VINT_H
 #define INC_MCC_VINT_H
 
-#include "mcc.get.h"
+#include <mcc/bitsof.h>
+#include <mcc/core/get.h>
 
 #include <limits.h>
 #include <inttypes.h>
@@ -12,8 +13,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <assert.h>
-
-#define bitsof(T) (CHAR_BIT * sizeof(T))
 
 #define INC_BITMATH
 #define MCC__INT_USE_HUGE

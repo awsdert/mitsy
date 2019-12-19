@@ -1,7 +1,8 @@
 #ifndef INC_MCC_MEM_H
 #define INC_MCC_MEM_H
-#include "mcc_err.h"
-#include "mcc_bitsof.h"
+#include <mcc/core/err.h>
+#include <mcc/bitsof.h>
+#include <mcc/malloc.h>
 
 int mcc_set_int_max( void *dst, size_t bits );
 int mcc_set_int_min( void *dst, size_t bits );

@@ -1,7 +1,7 @@
 #ifndef MCC_LIMITS_H
 #define MCC_LIMITS_H
 
-#include <mcc/core/sys.h>
+#include <mcc/core/dm.h>
 
 #ifndef MCC_IS_ROOT_INC
 #ifdef MCC_SYS_WINDOWS_OS

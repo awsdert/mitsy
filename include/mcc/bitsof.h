@@ -1,6 +1,5 @@
 #ifndef INC_BITSOF_H
 #define INC_BITSOF_H
-#include <mcc/limits.h>
 #include <mcc/stdint.h>
 #include <inttypes.h>
 #include <stdbool.h>

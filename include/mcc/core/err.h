@@ -1,9 +1,18 @@
 #ifndef INC_FAIL_H
 #define INC_FAIL_H
+/* TODO: Provide implementations for MCC_IS_ROOT_INC scenario, musl is
+ * best library to refer to for ideas on such stuff */
+#ifdef MCC_SYS_LINUX
+#include <linux/errno.h>
+#include <linux/stdlib.h>
+#include <linux/stdio.h>
+#include <linux/string.h>
+#endif
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#endif
 
 #define ERRORPOS_STR "%s:%d:"
 #define ERRORPOS_VAL __FILE__, __LINE__
