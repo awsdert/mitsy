@@ -1,16 +1,20 @@
 #ifndef MCC_STDINT_H
 #define MCC_STDINT_H
 
-#include "limits.h"
+#include <mcc/limits.h>
 
 #ifndef MCC_IS_ROOT_INC
 #	ifdef MCC_SYS_WINDOWS_OS
 #	include <BaseTsd.h>
 #	elif defined( MCC_SYS_LINUX )
+#	include <linux/stddef.h>
 #	include <linux/stdint.h>
+#	include <linux/stdbool.h>
 #	include <linux/inttypes.h>
 #	else
+#	include <stddef.h>
 #	include <stdint.h>
+#	include <stdbool.h>
 #	include <inttypes.h>
 #	endif
 #endif
@@ -20,6 +24,8 @@
 #	define INTPTR_TYPE __INTPTR_TYPE__
 #	elif defined( MCC_SYS_LLP64 )
 #	define INTPTR_TYPE long long
+#	elif defined( MCC_DM_IP16 )
+#	define INTPTR_TYPE int
 #	else
 #	define INTPTR_TYPE long
 #	endif
@@ -40,6 +46,8 @@ typedef unsigned INTPTR_TYPE uintptr_t;
 #	define SIZEOF_INTPTR __SIZEOF_INTPTR__
 #	elif defined( MCC_SYS_LLP64 )
 #	define SIZEOF_INTPTR SIZEOF_LLONG
+#	elif defined( MCC_DM_IP16 )
+#	define SIZEOF_INTPTR SIZEOF_INT
 #	else
 #	define SIZEOF_INTPTR SIZEOF_LONG
 #	endif
@@ -104,6 +112,8 @@ typedef unsigned INTPTR_TYPE uintptr_t;
 #	define PRI_INTPTR __PRI_INTPTR__
 #	elif defined( MCC_SYS_LLP64 )
 #	define PRI_INTPTR "ll"
+#	elif defined( MCC_DM_IP16 )
+#	define PRI_INTPTR
 #	else
 #	define PRI_INTPTR "l"
 #	endif
@@ -114,6 +124,8 @@ typedef unsigned INTPTR_TYPE uintptr_t;
 #	define SCN_INTPTR __SCN_INTPTR__
 #	elif defined( MCC_SYS_LLP64 )
 #	define SCN_INTPTR "ll"
+#	elif defined( MCC_DM_IP16 )
+#	define SCN_INTPTR
 #	else
 #	define SCN_INTPTR "l"
 #	endif

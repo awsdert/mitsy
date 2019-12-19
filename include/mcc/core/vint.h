@@ -4,9 +4,6 @@
 #include <mcc/bitsof.h>
 #include <mcc/core/get.h>
 
-#include <limits.h>
-#include <inttypes.h>
-#include <stdbool.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
