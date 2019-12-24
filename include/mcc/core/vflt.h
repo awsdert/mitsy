@@ -2,12 +2,8 @@
 #define INC_MCC_FPN_H
 
 #include <float.h>
-#include "mcc_vint.h"
-typedef signed char schar;
-typedef unsigned char uchar;
-typedef unsigned long ulong;
-typedef signed long long sllong;
-typedef unsigned long long ullong;
+#include <mcc/core/vint.h>
+#include <mcc/bitsof.h>
 #if 1
 #define mcc_huge __int128
 #define MCC_UHUGE_MAX ((unsigned __int128)-1)
@@ -124,7 +120,7 @@ typedef struct mcc_fpn_limits {
 
 typedef struct mcc_fpn {
 	long rounds;
-	long epsilon;
+	long double epsilon;
 	long pos;
 	long exp;
 	mcc_uhuge_t base;
@@ -140,7 +136,7 @@ typedef struct mcc_fpn {
 
 typedef struct mcc_big {
 	long rounds;
-	long epsilon;
+	long double epsilon;
 	long pos;
 	long exp;
 	mcc_uvint_t inf;

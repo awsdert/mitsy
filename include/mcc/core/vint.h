@@ -77,8 +77,8 @@ void mcc_vint_print( struct mcc__vint num, mcc_vint_seg_t min );
 struct mcc__vint mcc_vint_wrap( bool has_sign, void *addr, size_t size );
 int mcc_vint_size( struct mcc__vint *num, size_t size );
 int mcc_vint_fill( struct mcc__vint num, struct mcc__vint val );
-#define mcc_vint_to_val( NUM, VAL ) \
-	mcc_vint_fill( (NUM), mcc_vint_wrap( -(-(VAL) < 0), &(VAL), sizeof(VAL) ) )
+int mcc_vint_to_val( struct mcc__vint num, intmax_t val );
+int mcc_vint_to_uval( struct mcc__vint num, uintmax_t val );
 int mcc_vint_size_and_fill( struct mcc__vint *num, struct mcc__vint val );
 int mcc__vint_op_cmp( struct mcc__vint num, struct mcc__vint val );
 #define mcc__vint_is_nil( num ) (mcc__vint_op_cmp( num, (struct mcc__vint){0} ) == 0)
@@ -95,9 +95,9 @@ int mcc__vint_op_aor( struct mcc__vint num, struct mcc__vint val );
 int mcc__vint_op_xor( struct mcc__vint num, struct mcc__vint val );
 int mcc__vint_op_and( struct mcc__vint num, struct mcc__vint val );
 int mcc___vint_op_shl( struct mcc__vint num, mcc_vint_seg_t bits );
-int mcc___vint_op_shr( struct mcc__vint num, mcc_vint_seg_t bits );
+int mcc___vint_op_shr( struct mcc__vint num, mcc_vint_seg_t bits, bool neg );
 int mcc__vint_op_shl( struct mcc__vint num, struct mcc__vint val );
-int mcc__vint_op_shr( struct mcc__vint num, struct mcc__vint val );
+int mcc__vint_op_shr( struct mcc__vint num, struct mcc__vint val, bool neg );
 int mcc__vint_op_add( struct mcc__vint num, struct mcc__vint val );
 int mcc___vint_op_mul( struct mcc__vint num, struct mcc__vint val, struct mcc__vint tmp );
 int mcc__vint_op_mul( struct mcc__vint num, struct mcc__vint val );

@@ -1,7 +1,7 @@
 #ifndef INC_MCC_TSC_H
 #define INC_MCC_TSC_H
-#include "mcc_err.h"
-#include "mcc_bitsof.h"
+#include <mcc/core/err.h>
+#include <mcc/bitsof.h>
 #include <time.h>
 
 #if defined(__ARM__)

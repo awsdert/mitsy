@@ -1,4 +1,4 @@
-#include "mcc_get.h"
+#include <mcc/core/get.h>
 int mcc_encoding_type = 0;
 int mcc_encoding_node = mcc_encoding_count;
 char const *env_LANG = NULL;

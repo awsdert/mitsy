@@ -1,4 +1,4 @@
-#include "mcc_vflt.h"
+#include <mcc/core/vflt.h>
 #include <ctype.h>
 #include <pthread.h>
 mcc_fpn_t mcc_fpn_set_inf( mcc_fpn_t mcc );
@@ -552,14 +552,14 @@ mcc_big_t mcc_big_make( mcc_big_t mcc, mcc_big_t tmp ) {
 		for (
 			mcc_vint_fill( tmp.tmp, tmp.num );
 			mcc__vint_is_gth( tmp.tmp, one );
-			tmp.pos++, mcc___vint_op_shr( tmp.tmp, 1 )
+			tmp.pos++, mcc___vint_op_shr( tmp.tmp, 1, 0 )
 		);
 	}
 	else {
 		for (
 			mcc_vint_fill( tmp.tmp, tmp.one );
 			mcc__vint_is_gth( tmp.tmp, tmp.fpn );
-			tmp.pos--, mcc___vint_op_shr( tmp.tmp, 1 )
+			tmp.pos--, mcc___vint_op_shr( tmp.tmp, 1, 0 )
 		);
 		if ( mcc__vint_is_eql( tmp.tmp, tmp.fpn ) ) tmp.pos--;
 	}
@@ -577,10 +577,10 @@ mcc_big_t mcc_big_make( mcc_big_t mcc, mcc_big_t tmp ) {
 		mcc__vint_op_and( tmp.fpn, tmp.num );
 		mcc___vint_op_shl( tmp.one, tmp.pos );
 		mcc_vint_fill( tmp.tmp, tmp.num );
-		mcc___vint_op_shr( tmp.tmp, tmp.pos );
+		mcc___vint_op_shr( tmp.tmp, tmp.pos, 0 );
 		mcc_vint_fill( mcc.raw, tmp.tmp );
 		mcc_vint_fill( tmp.tmp, tmp.one );
-		mcc___vint_op_shr( tmp.tmp, 1 );
+		mcc___vint_op_shr( tmp.tmp, 1, 0 );
 		ret = mcc__vint_op_cmp( tmp.fpn, tmp.tmp );
 		if ( ret > 0 ) mcc__vint_op_inc( mcc.raw );
 		else if ( ret == 0 ) {
@@ -609,7 +609,7 @@ mcc_big_t mcc_big_make( mcc_big_t mcc, mcc_big_t tmp ) {
 	}
 	bits = (mcc.raw.stop.b - mcc.raw.zero.b) - limits.man_bits;
 	mcc___vint_op_shl( mcc.raw, bits );
-	mcc___vint_op_shr( mcc.raw, bits );
+	mcc___vint_op_shr( mcc.raw, bits, 0 );
 	mcc_big_exp:
 	mcc___vint_op_shl( tmp.raw, limits.exp_bits );
 	mcc__vint_op_aor( mcc.raw, tmp.raw );

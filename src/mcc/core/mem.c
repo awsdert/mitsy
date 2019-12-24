@@ -1,4 +1,4 @@
-#include "mcc_mem.h"
+#include <mcc/core/mem.h>
 
 int mcc_set_int_max( void *dst, size_t bits ) {
 	uchar *d;

@@ -311,10 +311,12 @@ typedef unsigned INTMAX_TYPE uintmax_t;
 
 #ifndef __imaxdiv_t_defined
 #define __imaxdiv_t_defined
+#if !defined(_INTTYPES_H)
 typedef struct imaxdiv {
 	intmax_t quo;
 	intmax_t rem;
 } imaxdiv_t;
+#endif
 #endif
 
 #ifndef INT_LEAST8_WIDTH
@@ -330,15 +332,34 @@ typedef struct imaxdiv {
 #	define INT_LEAST8_TYPE __INT_LEAST8_TYPE__
 #	elif defined( INT_LEAST8_WIDTH )
 #		if INT_LEAST8_WIDTH == INT_WIDTH
-#		define INT_LEAST8_TYPE int
+#		define INT_LEAST8_TYPE signed int
 #		elif INT_LEAST8_WIDTH == SHRT_WIDTH
-#		define INT_LEAST8_TYPE short
+#		define INT_LEAST8_TYPE signed short int
 #		else
-#		define INT_LEAST8_TYPE char
+#		define INT_LEAST8_TYPE signed char
 #		endif
 #	else
-#	define INT_LEAST8_TYPE int
+#	define INT_LEAST8_TYPE signed int
 #	define INT_LEAST8_WIDTH INT_WIDTH
+#	define PRI_LEAST8
+#	define SCN_LEAST8
+#	endif
+#endif
+
+#ifndef UINT_LEAST8_TYPE
+#	ifdef __UINT_LEAST8_TYPE__
+#	define UINT_LEAST8_TYPE __UINT_LEAST8_TYPE__
+#	elif defined( UINT_LEAST8_WIDTH )
+#		if UINT_LEAST8_WIDTH == INT_WIDTH
+#		define UINT_LEAST8_TYPE unsigned int
+#		elif UINT_LEAST8_WIDTH == SHRT_WIDTH
+#		define UINT_LEAST8_TYPE unsigned short
+#		else
+#		define UINT_LEAST8_TYPE unsigned char
+#		endif
+#	else
+#	define UINT_LEAST8_TYPE unsigned int
+#	define UINT_LEAST8_WIDTH INT_WIDTH
 #	define PRI_LEAST8
 #	define SCN_LEAST8
 #	endif
@@ -443,11 +464,11 @@ typedef struct imaxdiv {
 
 #ifndef __int_least8_t_defined
 #define __int_least8_t_defined
-typedef signed INT_LEAST8_TYPE int_least8_t;
+typedef INT_LEAST8_TYPE int_least8_t;
 #endif
 #ifndef __uint_least8_t_defined
 #define __uint_least8_t_defined
-typedef unsigned INT_LEAST8_TYPE uint_least8_t;
+typedef UINT_LEAST8_TYPE uint_least8_t;
 #endif
 
 #if MCC_CPU_WORD_WIDTH >= 16
@@ -883,15 +904,34 @@ typedef unsigned INT_LEAST64_TYPE uint_least64_t;
 #	define INT_FAST8_TYPE __INT_FAST8_TYPE__
 #	elif defined( INT_FAST8_WIDTH )
 #		if INT_FAST8_WIDTH == INT_WIDTH
-#		define INT_FAST8_TYPE int
+#		define INT_FAST8_TYPE signed int
 #		elif INT_FAST8_WIDTH == SHRT_WIDTH
-#		define INT_FAST8_TYPE short
+#		define INT_FAST8_TYPE signed short int
 #		else
-#		define INT_FAST8_TYPE char
+#		define INT_FAST8_TYPE signed char
 #		endif
 #	else
-#	define INT_FAST8_TYPE int
+#	define INT_FAST8_TYPE signed int
 #	define INT_FAST8_WIDTH INT_WIDTH
+#	define PRI_FAST8
+#	define SCN_FAST8
+#	endif
+#endif
+
+#ifndef UINT_FAST8_TYPE
+#	ifdef __UINT_FAST8_TYPE__
+#	define UINT_FAST8_TYPE __UINT_FAST8_TYPE__
+#	elif defined( UINT_FAST8_WIDTH )
+#		if UINT_FAST8_WIDTH == INT_WIDTH
+#		define UINT_FAST8_TYPE unsigned int
+#		elif UINT_FAST8_WIDTH == SHRT_WIDTH
+#		define UINT_FAST8_TYPE unsigned short int
+#		else
+#		define UINT_FAST8_TYPE unsigned char
+#		endif
+#	else
+#	define UINT_FAST8_TYPE unsigned int
+#	define UINT_FAST8_WIDTH INT_WIDTH
 #	define PRI_FAST8
 #	define SCN_FAST8
 #	endif
@@ -956,11 +996,11 @@ typedef unsigned INT_LEAST64_TYPE uint_least64_t;
 
 #ifndef __int_fast8_t_defined
 #define __int_fast8_t_defined
-typedef signed INT_FAST8_TYPE int_fast8_t;
+typedef INT_FAST8_TYPE int_fast8_t;
 #endif
 #ifndef __uint_fast8_t_defined
 #define __uint_fast8_t_defined
-typedef unsigned INT_FAST8_TYPE uint_fast8_t;
+typedef UINT_FAST8_TYPE uint_fast8_t;
 #endif
 
 #if MCC_CPU_WORD_WIDTH >= 16

@@ -1,1 +1,3 @@
-include src/makefile
+%: force
+	cd ./src/ && make $(MAKEFILES) $(MAKECMDGOALS)
+force: ;

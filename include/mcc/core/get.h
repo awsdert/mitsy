@@ -1,8 +1,8 @@
 #ifndef INC_MCC_GET_H
 #define INC_MCC_GET_H
-#include "mcc_bitsof.h"
-#include "mcc_err.h"
-#include "mcc_mem.h"
+#include <mcc/bitsof.h>
+#include <mcc/core/err.h>
+#include <mcc/core/mem.h>
 
 #ifdef _WIN32
 #include <windows.h>

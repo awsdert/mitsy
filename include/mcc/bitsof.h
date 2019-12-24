@@ -18,7 +18,7 @@ typedef signed char schar;
 typedef unsigned char uchar;
 #endif
 
-#ifdef HAVE_LLONG
+#ifdef MCC_HAVE_LLONG
 #	ifndef __sllong_defined
 #	define __sllong_defined
 typedef signed long long sllong;

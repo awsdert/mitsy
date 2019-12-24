@@ -1,6 +1,6 @@
 #ifndef INC_BASE62_H
 #define INC_BASE62_H
-#include "mcc_get.h"
+#include <mcc/core/get.h>
 
 #ifdef ULLONG_MAX
 typedef ullong ubase62_t;
