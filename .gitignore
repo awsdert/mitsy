@@ -1,0 +1,9 @@
+*.o
+*.so
+*.out
+*.elf
+*.app
+*.AppImage
+*.obj
+*.dll
+*.exe

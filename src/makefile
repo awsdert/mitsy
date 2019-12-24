@@ -5,15 +5,19 @@ IS_WIN32:=$(if $(IS_WIN64),,$(IS_WINDOWS))
 EXE?=$(if $(IS_WINDOWS),exe,AppImage)
 IFLAGS:=$(INC_PATHS:%=-I %)
 CFLAGS:=-Wall $(IFLAGS)
+mcc_core_sources:=$(wildcard mcc/core/*.c)
+mcc_core_objects:=$(mcc_core_sources:%.c=%.o)
+mcc_test_sources:=test/unit_tests.c
+mcc_test_objects:=$(test_core_sources:%.c=%.o)
 
 mcc: libmcc_core.so
 test: test.$(EXE)
 
-libmcc_core.so: $(wildcard mcc/core/*.o)
+libmcc_core.so: $(mcc_test_objects)
 	gcc -lpthread -o $@ $^
 
-test.AppImage: test/unit_tests.o libmcc_core.so
-	gcc -o $@ $^
+test.AppImage: $(mcc_test_objects) libmcc_core.so
+	gcc -l ./libmcc_core.so -o $@ $(mcc_test_objects)
 
 mcc/core/vflt.c: mcc/core/vflt.h
 mcc/core/vint.c: mcc/core/vint.h
