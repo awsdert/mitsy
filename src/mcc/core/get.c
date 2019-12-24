@@ -144,7 +144,7 @@ int open_mcc_encodings() {
 	}
 	return EXIT_SUCCESS;
 }
-int mcc_strctype( char c ) {
+int mcc_strctype( uchar c ) {
 	switch ( c ) {
 	case '\n': case '\r':
 	case '\v': case '\f':

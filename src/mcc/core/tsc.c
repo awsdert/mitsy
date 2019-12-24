@@ -1,4 +1,4 @@
-#include "mcc_tsc.h"
+#include <mcc/core/tsc.h>
 
 mcc_tsc_t mcc_tsc() {
 #if defined( MCC_CPU_x86 )

@@ -28,7 +28,7 @@
 #define _2CH832( DATA ) U#DATA
 #define TOCH832( DATA ) _2CH832( DATA )
 
-#if CHAR_BIT >= 8
+#if CHAR_BIT >= 8 && defined( UNSIGNED_CHAR )
 typedef char mcc_ch8_t;
 #define MCC_CH8_MAX CHAR_MAX
 #define MCC_CH8_MIN CHAR_MIN
@@ -176,7 +176,7 @@ long mcc_wcslen( wchar_t const *txt );
 long mcc_ch8len( mcc_ch8_t const *txt );
 long mcc_c16len( mcc_c16_t const *txt );
 long mcc_c32len( mcc_c32_t const *txt );
-int mcc_strctype( char c );
+int mcc_strctype( uchar c );
 int mcc_wcsctype( wchar_t c );
 int mcc_ch8ctype( mcc_ch8_t c );
 int mcc_c16ctype( char16_t c );
