@@ -1,5 +1,7 @@
-LIB_PATHS=../lib
-INC_PATHS=../include
+mcc_lib_path=../lib
+mcc_inc_path=../include
+LIB_PATHS:=$(mcc_lib_path)
+INC_PATHS:=$(mcc_inc_path)
 IS_WINDOWS:=$(if $(Program Files),1,)
 IS_WIN64:=$(if ${Program Files(x86)},1,)
 IS_WIN32:=$(if $(IS_WIN64),,$(IS_WINDOWS))
@@ -16,7 +18,7 @@ mcc_core_objects:=$(mcc_core_sources:%.c=%.o)
 mcc_test_sources:=test/unit_tests.c
 mcc_test_objects:=$(mcc_test_sources:%.c=%.o)
 mcc_core_lib_name=libmcc_core.$(DLL)
-mcc_core_lib:=../lib/$(mcc_core_lib_name)
+mcc_core_lib:=$(mcc_lib_path)/$(mcc_core_lib_name)
 mcc_test_app:=mcc_unit_test.$(EXE)
 
 mcc: $(mcc_core_lib)
@@ -30,10 +32,9 @@ rebuild: clean mcc
 
 $(mcc_core_lib): $(mcc_core_objects)
 	$(CC) -shared $(BFLAGS) -lpthread -o $@ $^
-	$(CC) -shared $(BFLAGS) -lpthread -o $(mcc_core_lib_name) $^
 
 $(mcc_test_app): $(mcc_test_objects) $(mcc_core_lib)
-	$(CC) $(BFLAGS) -lmcc_core -o $@ $(mcc_test_objects)
+	$(CC) $(BFLAGS) -lmcc_core -o $@ $(mcc_test_objects) -Wl,-rpath,$(LIB_PATHS)
 	
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
