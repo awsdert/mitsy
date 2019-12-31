@@ -11,32 +11,16 @@
 #include <time.h>
 #include <assert.h>
 
-#define INC_BITMATH
-//#define MCC__INT_USE_HUGE
-
-typedef unsigned int mcc_test_t;
-#define MCC_TEST_END_BIT (UINT_MAX & INT_MIN)
-#define MCC_TEST_PRI_PFX ""
-#ifndef MCC__INT_USE_HUGE
-//#define MCC__INT_USE_TEST
-#define MCC__INT_USE_CHAR
-#endif
-#ifdef MCC__INT_USE_TEST
-typedef mcc_test_t mcc_vint_seg_t;
-#define MCC_VINT_SEG_END_BIT (~0u & MCC_TEST_END_BIT)
-#define MCC_VINT_SEG_PRI_PFX MCC_TEST_PRI_PFX
-#elif defined( MCC__INT_USE_CHAR )
+#ifdef MCC_VINT_SEG_USE_LONG
+typedef unsigned long mcc_vint_seg_t;
+#define MCC_VINT_SEG_END_BIT (ULONG_MAX & LONG_MIN)
+#define MCC_VINT_SEG_PRI_PFX "l"
+#define MCC_VINT_SEG_SCN_PFX "l"
+#else
 typedef unsigned char mcc_vint_seg_t;
 #define MCC_VINT_SEG_END_BIT (UCHAR_MAX & SCHAR_MIN)
 #define MCC_VINT_SEG_PRI_PFX ""
-#elif defined( MCC__INT_USE_HUGE )
-typedef unsigned __int128 mcc_vint_seg_t;
-#define MCC_VINT_SEG_END_BIT (~((~((unsigned __int128)0u)) >> 1))
-#define MCC_VINT_SEG_PRI_PFX "I128"
-#else
-typedef unsigned long mcc_vint_seg_t;
-#define MCC_VINT_SEG_END_BIT (~(ULONG_MAX >> 1))
-#define MCC_VINT_SEG_PRI_PFX "l"
+#define MCC_VINT_SEG_SCN_PFX "hh"
 #endif
 
 typedef struct mcc_bit {
@@ -45,7 +29,7 @@ typedef struct mcc_bit {
 	mcc_vint_seg_t b;
 	mcc_vint_seg_t bit;
 } mcc_bit_t;
-
+void mcc_printb( char const *pfx, void *addr, size_t bits, char const *sfx );
 int mcc_bit_op_cmp( mcc_bit_t num, mcc_bit_t val );
 mcc_bit_t mcc_bit_op_inc( mcc_bit_t num );
 mcc_bit_t mcc_bit_op_dec( mcc_bit_t num );

@@ -14,21 +14,26 @@ IFLAGS:=$(INC_PATHS:%=-I %)
 CFLAGS:=-Wall -fPIC $(IFLAGS)
 CC=clang
 mcc_core_sources:=$(wildcard mcc/core/*.c) $(wildcard mcc/*.c)
-mcc_core_objects:=$(mcc_core_sources:%.c=%.o)
-mcc_test_sources:=test.c test/core/vint.c
-mcc_test_objects:=$(mcc_test_sources:%.c=%.o)
+mcc_core_objects:=$(mcc_core_sources:%=%.o)
+mcc_test_sources:=test.c $(wildcard test/core/*.c)
+mcc_test_objects:=$(mcc_test_sources:%=%.o)
 mcc_core_lib_name=libmcc_core.$(DLL)
 mcc_core_lib:=$(mcc_lib_path)/$(mcc_core_lib_name)
 mcc_test_app:=test.$(EXE)
-
+MAKECMDGOALS?=all
+all: build
+build: $(mcc_core_lib) $(mcc_test_app) force
 mcc: $(mcc_core_lib)
-test: $(mcc_test_app)
+test: $(mcc_test_app) force
 	./$(mcc_test_app)
 clean:
-	$(CMD_DEL) $(mcc_core_objects)
-	$(CMD_DEL) $(mcc_test_objects)
+	$(CMD_DEL) mcc/core/*.o
+	$(CMD_DEL) mcc/*.o
+	$(CMD_DEL) test/core/*.o
+	$(CMD_DEL) test/*.o
+	$(CMD_DEL) *.o
 	$(CMD_DEL) $(mcc_test_app) $(mcc_core_lib) $(mcc_core_lib_name)
-rebuild: clean mcc force
+rebuild: clean build force
 
 $(mcc_core_lib): $(mcc_core_objects)
 	$(CC) -shared $(BFLAGS) -lpthread -o $@ $^
@@ -36,7 +41,7 @@ $(mcc_core_lib): $(mcc_core_objects)
 $(mcc_test_app): $(mcc_test_objects) $(mcc_core_lib)
 	$(CC) $(BFLAGS) -lmcc_core -o $@ $(mcc_test_objects) -Wl,-rpath,$(LIB_PATHS)
 	
-%.o: %.c
+%.c.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 mcc/core/vflt.c: mcc/core/vflt.h
@@ -56,7 +61,9 @@ mcc/stdint.h: mcc/limits.h
 mcc/limits.h: mcc/core/sys.h
 mcc/core/sys.h:
 test.c: test/core/vint.h
-test/core/vint.c: test/core/vint.h
+test/core/%.c: test/core/%.h
 test/core/vint.h: mcc/core/vint.h mcc/time.h
+test/core/vflt.h: test/core/vint.h
 
 force: ;
+.PHONY: all mcc test clean rebuild

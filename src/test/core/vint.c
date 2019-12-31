@@ -1,5 +1,5 @@
 #include "vint.h"
-int test__vint( mcc_test_t num, char *op, mcc_test_t val );
+int test__vint( ulong num, char *op, ulong val );
 
 char *test_vint_operations[] = {
 	"==", "!=", "!", ">", ">=", "<", "<=",
@@ -8,7 +8,7 @@ char *test_vint_operations[] = {
 NULL };
 
 int test_vint() {
-	mcc_test_t i, j;
+	ulong i, j;
 	mcc_rnd_t ctx = 0;
 	for ( j = 0; j < 3; ++j ) {
 		for ( i = 0; test_vint_operations[i]; ++i ) {
@@ -18,12 +18,11 @@ int test_vint() {
 	return 0;
 }
 
-int test__vint( mcc_test_t num, char *op, mcc_test_t val ) {
+int test__vint( ulong num, char *op, ulong val ) {
 	int ret = EXIT_FAILURE;
-	mcc_test_t rem = num, b4 = num;
+	ulong rem = num, b4 = num;
 	mcc_uvint_t _num = {0}, _val = {0}, _rem = {0};
-	printf("Testing vint operations for %"
-		MCC_TEST_PRI_PFX "u %s %" MCC_TEST_PRI_PFX "u... ",
+	printf("Testing vint operations for %lu %s %lu... ",
 		num, op, val );
 	(void)mcc_vint_size_and_fill( &_num,
 		mcc_vint_wrap( 0, &num, sizeof(num) ) );
@@ -106,20 +105,20 @@ int test__vint( mcc_test_t num, char *op, mcc_test_t val ) {
 			goto done;
 	}
 	done:
-	if ( *((mcc_test_t*)(_num.zero.seg)) == num ) {
+	if ( *((ulong*)(_num.zero.seg)) == num ) {
 		puts("Results match!\n");
 		ret = EXIT_SUCCESS;
 	}
 	else
-		printf( "_num = %08" MCC_TEST_PRI_PFX "X, "
-			"num = %08" MCC_TEST_PRI_PFX "X, "
-			"b4 = %08" MCC_TEST_PRI_PFX "X, "
-			"val = %" MCC_TEST_PRI_PFX "u, "
-			"_rem = %08" MCC_TEST_PRI_PFX "X, "
-			"rem = %08" MCC_TEST_PRI_PFX "X "
+		printf( "_num = %08lX, "
+			"num = %08lX, "
+			"b4 = %08lX, "
+			"val = %lu, "
+			"_rem = %08lX, "
+			"rem = %08lX "
 			"op = '%s'\n",
-			*((mcc_test_t*)(_num.zero.seg)), num, b4, val,
-			*((mcc_test_t*)(_rem.zero.seg)), rem, op );
+			*((ulong*)(_num.zero.seg)), num, b4, val,
+			*((ulong*)(_rem.zero.seg)), rem, op );
 	fail:
 	mcc_vint_size( &_num, 0 );
 	mcc_vint_size( &_val, 0 );

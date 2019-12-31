@@ -10,6 +10,19 @@ int mcc_geti( long c, long l, long h ) {
 	return -1;
 }
 
+void mcc_printb( char const *pfx, void * addr, size_t bits, char const *sfx ) {
+	mcc_bit_t b = {0};
+	b.seg = addr;
+	b.bit = 1;
+	b = mcc__bit_op_add( b, bits );
+	printf("%s",pfx);
+	while ( b.b ) {
+		b = mcc_bit_op_dec(b);
+		putchar( '0' + !!(*(b.seg) & b.bit) );
+	}
+	printf("%s",sfx);
+}
+
 mcc_bit_t mcc_bit_op_inc( mcc_bit_t num ) {
 	mcc_vint_seg_t max = 0;
 	max = ~max;

@@ -1,5 +1,5 @@
-#ifndef INC_mcc_mem_t_H
-#define INC_mcc_mem_t_H
+#ifndef INC_MCC_CORE_MEM_H
+#define INC_MCC_CORE_MEM_H
 #include <mcc/core/err.h>
 #include <mcc/bitsof.h>
 #include <mcc/malloc.h>
