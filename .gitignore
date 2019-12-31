@@ -7,3 +7,5 @@
 *.obj
 *.dll
 *.exe
+gede.ini
+gede*.ini

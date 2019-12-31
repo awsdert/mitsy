@@ -12,10 +12,10 @@
 #include <assert.h>
 
 #define INC_BITMATH
-#define MCC__INT_USE_HUGE
+//#define MCC__INT_USE_HUGE
 
 typedef unsigned int mcc_test_t;
-#define MCC_TEST_END_BIT (~(UINT_MAX >> 1))
+#define MCC_TEST_END_BIT (~0u & INT_MIN)
 #define MCC_TEST_PRI_PFX ""
 #ifndef MCC__INT_USE_HUGE
 //#define MCC__INT_USE_TEST
@@ -23,11 +23,11 @@ typedef unsigned int mcc_test_t;
 #endif
 #ifdef MCC__INT_USE_TEST
 typedef mcc_test_t mcc_vint_seg_t;
-#define MCC__INT_SEG_END_BIT MCC_TEST_END_BIT
+#define MCC__INT_SEG_END_BIT (~0u & MCC_TEST_END_BIT)
 #define MCC__INT_SEG_PRI_PFX MCC_TEST_PRI_PFX
 #elif defined( MCC__INT_USE_CHAR )
 typedef unsigned char mcc_vint_seg_t;
-#define MCC__INT_SEG_END_BIT (~(UCHAR_MAX >> 1))
+#define MCC__INT_SEG_END_BIT (~0u & SCHAR_MIN)
 #define MCC__INT_SEG_PRI_PFX ""
 #elif defined( MCC__INT_USE_HUGE )
 typedef unsigned __int128 mcc_vint_seg_t;

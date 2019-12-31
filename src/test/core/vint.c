@@ -1,44 +1,18 @@
-#include <mcc/core/vint.h>
+#include "vint.h"
 int test__vint( mcc_test_t num, char *op, mcc_test_t val );
 
-char *operations[] = {
+char *test_vint_operations[] = {
 	"==", "!=", "!", ">", ">=", "<", "<=",
 	"~", "<<", ">>", "|", "&", "^",
 	"++", "+", "*", "--", "-", "/", "%",
 NULL };
 
-typedef time_t mcc_rnd_t;
-long mcc__rnd( mcc_rnd_t *ctx, long min, long max ) {
-	mcc_rnd_t bit = 1, seed = time(NULL), mov = 0;
-	long val;
-	if ( ctx ) mov = *ctx;
-	bit <<= mov++;
-	if ( !bit || bit > seed ) {
-		bit = 1;
-		mov = 0;
-	}
-	val = (seed & bit) ? 1 : 0;
-	bit <<= 1;
-	if ( ctx ) *ctx = mov;
-	if ( min > max ) min = max;
-	if ( min != max ) {
-		seed *= clock();
-		bit = ~((~0u) << mov);
-		val = (seed & bit);
-		if ( val > max ) val = max;
-		val -= (min >= 0) ? min : -min;
-		return ( val < min ) ? min : val;
-	}
-	return val ? max : min;
-}
-#define mcc_rnd( ctx ) mcc__rnd( ctx, LONG_MIN, LONG_MAX )
-
 int test_vint() {
 	mcc_test_t i, j;
-	mcc_rnd_t ctx;
-	for ( j = 0; j < 10; ++j ) {
-		for ( i = 0; operations[i]; ++i ) {
-			test__vint( mcc_rnd(&ctx), operations[i], mcc_rnd(&ctx) );
+	mcc_rnd_t ctx = 0;
+	for ( j = 0; j < 3; ++j ) {
+		for ( i = 0; test_vint_operations[i]; ++i ) {
+			test__vint( mcc_rnd(&ctx), test_vint_operations[i], mcc_rnd(&ctx) );
 		}
 	}
 	return 0;
@@ -48,6 +22,9 @@ int test__vint( mcc_test_t num, char *op, mcc_test_t val ) {
 	int ret = EXIT_FAILURE;
 	mcc_test_t rem = num, b4 = num;
 	mcc_uvint_t _num = {0}, _val = {0}, _rem = {0};
+	printf("Testing vint operations for %"
+		MCC_TEST_PRI_PFX "u %s %" MCC_TEST_PRI_PFX "u... ",
+		num, op, val );
 	(void)mcc_vint_size_and_fill( &_num,
 		mcc_vint_wrap( 0, &num, sizeof(num) ) );
 	(void)mcc_vint_size_and_fill( &_val,
@@ -129,8 +106,10 @@ int test__vint( mcc_test_t num, char *op, mcc_test_t val ) {
 			goto done;
 	}
 	done:
-	if ( *((mcc_test_t*)(_num.zero.seg)) == num )
+	if ( *((mcc_test_t*)(_num.zero.seg)) == num ) {
+		puts("Results match!\n");
 		ret = EXIT_SUCCESS;
+	}
 	else
 		printf( "_num = %08" MCC_TEST_PRI_PFX "X, "
 			"num = %08" MCC_TEST_PRI_PFX "X, "

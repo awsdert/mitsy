@@ -1,3 +1,3 @@
 %: force
-	cd ./src/ && make $(MAKEFILES) $(MAKECMDGOALS)
+	cd ./src/ && make --no-print-directory $(MAKEFILES) $(MAKECMDGOALS)
 force: ;

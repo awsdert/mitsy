@@ -361,8 +361,13 @@ int mcc___vint_op_shl( struct mcc__vint num, mcc_vint_seg_t bits ) {
 	mcc_vint_seg_t max_bits;
 	if ( ret != EXIT_SUCCESS ) return ret;
 	max_bits = (num.stop.b - num.zero.b);
-	if ( bits >= max_bits )
+	if ( bits >= max_bits ) {
+		printf(
+			"bits = %" MCC__INT_SEG_PRI_PFX
+			"u, max_bits = %" MCC__INT_SEG_PRI_PFX "u\n",
+			bits, max_bits );
 		bits %= max_bits;
+	}
 	if ( !bits ) return EXIT_SUCCESS;
 	n = num.stop;
 	v = mcc__bit_op_sub( n, bits );
@@ -653,28 +658,33 @@ int mcc__vint_op_shl( struct mcc__vint num, struct mcc__vint val ) {
 	if ( ret != EXIT_SUCCESS ) return ret;
 	bits = num.stop.b - num.zero.b;
 	tmp = mcc_vint_wrap( 0, &bits, sizeof(bits) );
-	move = *(val.zero.seg);
 	if ( mcc__vint_is_gte( val, tmp ) ) {
 		ret = mcc_vint_size_and_fill( &cpy, val );
 		if ( ret != EXIT_SUCCESS ) return ret;
-		mcc___vint_op_shl( cpy, bits );
-		mcc___vint_op_shr( cpy, bits, 0 );
-		mcc_vint_size( &cpy, 0 );
+		ret = mcc__vint_op_mod( cpy, tmp );
 		if ( ret != EXIT_SUCCESS ) return ret;
+		move = *(cpy.zero.seg);
+		(void)mcc_vint_size( &cpy, 0 );
 	}
+	else move = *(val.zero.seg);
 	return mcc___vint_op_shl(num, move );
 }
 int mcc__vint_op_shr( struct mcc__vint num, struct mcc__vint val, bool neg ) {
 	int ret = mcc_vint_validate2( &num, &val );
-	struct mcc__vint tmp = {0};
+	struct mcc__vint tmp = {0}, cpy = {0};
 	mcc_vint_seg_t move = 0, bits = 0;
 	if ( ret != EXIT_SUCCESS ) return ret;
 	bits = num.stop.b - num.zero.b;
 	tmp = mcc_vint_wrap( 0, &bits, sizeof(bits) );
 	move = *(val.zero.seg);
 	if ( mcc__vint_is_gte( val, tmp ) ) {
-		ret = mcc__vint_op_mod( val, tmp );
+		ret = mcc_vint_size_and_fill( &cpy, val );
 		if ( ret != EXIT_SUCCESS ) return ret;
+		ret = mcc__vint_op_mod( cpy, tmp );
+		if ( ret != EXIT_SUCCESS ) return ret;
+		move = *(cpy.zero.seg);
+		(void)mcc_vint_size( &cpy, 0 );
 	}
+	else move = *(val.zero.seg);
 	return mcc___vint_op_shr( num, move, neg );
 }
