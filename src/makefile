@@ -22,13 +22,13 @@ mcc_core_lib:=$(mcc_lib_path)/$(mcc_core_lib_name)
 mcc_test_app:=test.$(EXE)
 
 mcc: $(mcc_core_lib)
-test: $(mcc_test_app) force
+test: $(mcc_test_app)
 	./$(mcc_test_app)
 clean:
 	$(CMD_DEL) $(mcc_core_objects)
 	$(CMD_DEL) $(mcc_test_objects)
 	$(CMD_DEL) $(mcc_test_app) $(mcc_core_lib) $(mcc_core_lib_name)
-rebuild: clean mcc
+rebuild: clean mcc force
 
 $(mcc_core_lib): $(mcc_core_objects)
 	$(CC) -shared $(BFLAGS) -lpthread -o $@ $^

@@ -35,7 +35,7 @@ mcc_bit_t mcc_bit_op_dec( mcc_bit_t num ) {
 	--(num.b);
 	num.bit >>= 1;
 	if ( !(num.bit) ) {
-		num.bit = MCC__INT_SEG_END_BIT;
+		num.bit = MCC_VINT_SEG_END_BIT;
 		--(num.i);
 		--(num.seg);
 	}
@@ -90,7 +90,7 @@ mcc_bit_t mcc__bit_op_sub( mcc_bit_t num, mcc_vint_seg_t bits ) {
 	return num;
 #else
 	mcc_vint_seg_t i = num.bit;
-	if ( i == MCC__INT_SEG_END_BIT ) goto mcc__bit_op_sub_bytes;
+	if ( i == MCC_VINT_SEG_END_BIT ) goto mcc__bit_op_sub_bytes;
 	while ( bits && i ) {
 		--bits;
 		i >>= 1;
@@ -361,13 +361,8 @@ int mcc___vint_op_shl( struct mcc__vint num, mcc_vint_seg_t bits ) {
 	mcc_vint_seg_t max_bits;
 	if ( ret != EXIT_SUCCESS ) return ret;
 	max_bits = (num.stop.b - num.zero.b);
-	if ( bits >= max_bits ) {
-		printf(
-			"bits = %" MCC__INT_SEG_PRI_PFX
-			"u, max_bits = %" MCC__INT_SEG_PRI_PFX "u\n",
-			bits, max_bits );
+	if ( bits >= max_bits )
 		bits %= max_bits;
-	}
 	if ( !bits ) return EXIT_SUCCESS;
 	n = num.stop;
 	v = mcc__bit_op_sub( n, bits );

@@ -15,7 +15,7 @@
 //#define MCC__INT_USE_HUGE
 
 typedef unsigned int mcc_test_t;
-#define MCC_TEST_END_BIT (~0u & INT_MIN)
+#define MCC_TEST_END_BIT (UINT_MAX & INT_MIN)
 #define MCC_TEST_PRI_PFX ""
 #ifndef MCC__INT_USE_HUGE
 //#define MCC__INT_USE_TEST
@@ -23,20 +23,20 @@ typedef unsigned int mcc_test_t;
 #endif
 #ifdef MCC__INT_USE_TEST
 typedef mcc_test_t mcc_vint_seg_t;
-#define MCC__INT_SEG_END_BIT (~0u & MCC_TEST_END_BIT)
-#define MCC__INT_SEG_PRI_PFX MCC_TEST_PRI_PFX
+#define MCC_VINT_SEG_END_BIT (~0u & MCC_TEST_END_BIT)
+#define MCC_VINT_SEG_PRI_PFX MCC_TEST_PRI_PFX
 #elif defined( MCC__INT_USE_CHAR )
 typedef unsigned char mcc_vint_seg_t;
-#define MCC__INT_SEG_END_BIT (~0u & SCHAR_MIN)
-#define MCC__INT_SEG_PRI_PFX ""
+#define MCC_VINT_SEG_END_BIT (UCHAR_MAX & SCHAR_MIN)
+#define MCC_VINT_SEG_PRI_PFX ""
 #elif defined( MCC__INT_USE_HUGE )
 typedef unsigned __int128 mcc_vint_seg_t;
-#define MCC__INT_SEG_END_BIT (~((~((unsigned __int128)0u)) >> 1))
-#define MCC__INT_SEG_PRI_PFX "I128"
+#define MCC_VINT_SEG_END_BIT (~((~((unsigned __int128)0u)) >> 1))
+#define MCC_VINT_SEG_PRI_PFX "I128"
 #else
 typedef unsigned long mcc_vint_seg_t;
-#define MCC__INT_SEG_END_BIT (~(ULONG_MAX >> 1))
-#define MCC__INT_SEG_PRI_PFX "l"
+#define MCC_VINT_SEG_END_BIT (~(ULONG_MAX >> 1))
+#define MCC_VINT_SEG_PRI_PFX "l"
 #endif
 
 typedef struct mcc_bit {
