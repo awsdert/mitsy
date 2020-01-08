@@ -5,8 +5,20 @@ this file.
 
 *awsdert
 ========
-Now: Seemed to have correctly handled exponent and rounding,
-currently trying to find where an infinite loop is occuring
+Now: creating a little cheat utility for Final Fantasy XV while keeping
+the API as close to fexible as possible so that I can use on other games
+(Got tired of waiting for PINCE to be usable and for GameConqueror to
+ever be updated) - will help me with later target because I have to
+duplicate aset of callback functions to pass to glut to make the lua
+calls match the window they're intended for, consult this address for info
+https://cboard.cprogramming.com/c-programming/178583-retrieving-information-just-outside-duplicate-function.html
+When I come back: Seemed to have correctly handled exponent and rounding,
+currently trying to find where an infinite loop is occuring - don't
+remember if I've done this, can always try compiling the test file which
+hooks the API and tries it, might be at the point where I'm redesigning
+what I had to be more memory effiecient and take less parameters since
+that was definitly not the intended final function, still gotta do the
+math functions however and even decode back to a string
 **Task list after the above is done (within current goal)
 1. Check same logic works for double and
 long double ~ quirks in large exponents
