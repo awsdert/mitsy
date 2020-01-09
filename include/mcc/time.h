@@ -100,7 +100,7 @@ clock_t clock();
 time_t time( time_t * _timer );
 #endif
 
-typedef time_t mcc_rnd_t;
+typedef ptrdiff_t mcc_rnd_t;
 long mcc__rnd( mcc_rnd_t *ctx, long min, long max );
 #define mcc_rnd( ctx ) mcc__rnd( ctx, LONG_MIN, LONG_MAX )
 

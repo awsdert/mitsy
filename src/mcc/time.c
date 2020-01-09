@@ -26,14 +26,13 @@ time_t time(time_t *_timer) {
 #endif
 long mcc__rnd( mcc_rnd_t *seed, long min, long max ) {
 	unsigned char *tmp = malloc(1);
-    /* Initial ranom value */
-    long val = time(NULL) + ((ptrdiff_t)tmp), _seed = 1;
-    if ( !seed ) seed = &seed;
-    if ( *seed == 0 ) *seed = 1;
-    /* Counter possible divide by 0 situation */
-    val %= *seed;
-    val *= clock();
-    free(tmp);
-    *seed <<= 1;
-    return (val > max) ? max : (val < min ? min : val);
+	/* Initial random value */
+	long val = time(NULL) + ((ptrdiff_t)tmp);
+	if ( !seed ) seed = (mcc_rnd_t*)(&seed);
+	if ( *seed == 0 ) *seed = 1;
+	val %= *seed;
+	val *= clock();
+	free(tmp);
+	*seed <<= 1;
+	return (val > max) ? max : (val < min ? min : val);
 }
