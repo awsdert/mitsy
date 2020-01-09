@@ -1,3 +1,4 @@
+#include <mcc/malloc.h>
 #include <mcc/time.h>
 #ifdef MCC_IS_ROOT_INC
 /* https://git.musl-libc.org */
@@ -23,26 +24,16 @@ time_t time(time_t *_timer) {
 #endif
 }
 #endif
-long mcc__rnd( mcc_rnd_t *ctx, long min, long max ) {
-	mcc_rnd_t bit = 1, seed = time(NULL), mov = 0;
-	long val;
-	if ( ctx ) mov = *ctx;
-	bit <<= mov++;
-	if ( !bit || bit > seed ) {
-		bit = 1;
-		mov = 0;
-	}
-	val = (seed & bit) ? 1 : 0;
-	bit <<= 1;
-	if ( ctx ) *ctx = mov;
-	if ( min > max ) min = max;
-	if ( min != max ) {
-		seed *= clock();
-		bit = ~((~0u) << mov);
-		val = (seed & bit);
-		if ( val > max ) val = max;
-		val -= (min >= 0) ? min : -min;
-		return ( val < min ) ? min : val;
-	}
-	return val ? max : min;
+long mcc__rnd( mcc_rnd_t *seed, long min, long max ) {
+	unsigned char *tmp = malloc(1);
+    /* Initial ranom value */
+    long val = time(NULL) + ((ptrdiff_t)tmp), _seed = 1;
+    if ( !seed ) seed = &seed;
+    if ( *seed == 0 ) *seed = 1;
+    /* Counter possible divide by 0 situation */
+    val %= *seed;
+    val *= clock();
+    free(tmp);
+    *seed <<= 1;
+    return (val > max) ? max : (val < min ? min : val);
 }
