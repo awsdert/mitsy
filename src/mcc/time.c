@@ -24,15 +24,25 @@ time_t time(time_t *_timer) {
 #endif
 }
 #endif
-long mcc__rnd( mcc_rnd_t *seed, long min, long max ) {
-	unsigned char *tmp = malloc(1);
+ulong mcc___rnd( mcc_rnd_t *seed ) {
 	/* Initial random value */
-	long val = time(NULL) + ((ptrdiff_t)tmp);
-	if ( !seed ) seed = (mcc_rnd_t*)(&seed);
-	if ( *seed == 0 ) *seed = 1;
-	val %= *seed;
-	val *= clock();
-	free(tmp);
-	*seed <<= 1;
-	return (val > max) ? max : (val < min ? min : val);
+	ulong val = (ulong)(&seed) * (ulong)clock() * (ulong)clock();
+	if ( seed ) {
+		if ( *seed == 0 ) *seed = 1;
+		val %= *seed;
+		*seed <<= 1;
+	}
+	return val;
+}
+long mcc__rnd( mcc_rnd_t *seed, long min, long max ) {
+	/* Initial random value */
+	long val = (ulong)(&seed) * (ulong)clock() * (ulong)clock();
+	if ( seed ) {
+		if ( *seed == 0 ) *seed = 1;
+		val %= *seed;
+		*seed <<= 1;
+	}
+	if ( val < min ) return (min != 0) ? val % min : -(val & 1);
+	if ( val > max ) return (max != 0) ? val % max : (val & 1);
+	return val;
 }
